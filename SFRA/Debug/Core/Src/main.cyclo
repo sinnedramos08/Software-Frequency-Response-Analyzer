@@ -1,0 +1,5 @@
+../Core/Inc/compensator.h:46:20:compensator_2P2Z_Update	1
+../Core/Src/main.c:91:5:main	3
+../Core/Src/main.c:176:6:SystemClock_Config	3
+../Core/Src/main.c:219:6:HAL_HRTIM_CounterResetCallback	3
+../Core/Src/main.c:277:6:Error_Handler	1
