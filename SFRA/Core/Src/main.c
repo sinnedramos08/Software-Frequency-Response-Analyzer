@@ -58,6 +58,13 @@
 #define A1_I (+0.7779690592966855)
 #define A2_I (+0.2220309407033146)
 
+#define B0_V (+0.2476368622951489)
+#define B1_V (+0.0006598251225833)
+#define B2_V (-0.2469770371725656)
+#define A1_V (+1.9800607277045987)
+#define A2_V (-0.9800607277045986)
+
+
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -71,6 +78,7 @@ COM_InitTypeDef BspCOMInit;
 
 /* USER CODE BEGIN PV */
 compensator_2p2z_t 		comp2p2z_iloop;
+compensator_2p2z_t		comp2p2z_vloop;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -90,7 +98,8 @@ void SystemClock_Config(void);
   */
 int main(void)
 {
-	/* USER CODE BEGIN 1 */
+
+  /* USER CODE BEGIN 1 */
 
   /* USER CODE END 1 */
 
@@ -117,16 +126,24 @@ int main(void)
   MX_DAC2_Init();
   /* USER CODE BEGIN 2 */
   compensator_2P2Z_Init(&comp2p2z_iloop, 0.0f, A1_I, A2_I, B0_I, B1_I, B2_I, 1);
+  compensator_2P2Z_Init(&comp2p2z_vloop, 0.0f, A1_V, A2_V, B0_V, B1_V, B2_V, 1);
+
   SFRA_Init();
   LUT_Init();
 
   HAL_DAC_Start(&hdac1, DAC_CHANNEL_1);
   HAL_DAC_Start(&hdac2, DAC_CHANNEL_1);
 
+
+#if TOGGLE_SWEEP_ILOOP_FS_100KHZ
   HAL_HRTIM_WaveformCountStart_IT(&hhrtim1, HRTIM_TIMERID_TIMER_A);
-  HAL_HRTIM_WaveformOutputStart(&hhrtim1, HRTIM_OUTPUT_TA1|HRTIM_OUTPUT_TA2);
+  HAL_HRTIM_WaveformOutputStart(&hhrtim1, HRTIM_OUTPUT_TA1|HRTIM_OUTPUT_TA2);	// For Debugging Purposes
+#endif
 
-
+#if TOGGLE_SWEEP_VLOOP_FS_6KHZ
+  HAL_HRTIM_WaveformCountStart_IT(&hhrtim1, HRTIM_TIMERID_TIMER_D);
+  HAL_HRTIM_WaveformOutputStart(&hhrtim1, HRTIM_OUTPUT_TD1|HRTIM_OUTPUT_TD2);	// For Debugging Purposes
+#endif
 
   /* USER CODE END 2 */
 
@@ -223,16 +240,13 @@ void SystemClock_Config(void)
 /* USER CODE BEGIN 4 */
 void HAL_HRTIM_CounterResetCallback(HRTIM_HandleTypeDef * hhrtim, uint32_t TimerIdx)
 {
+#if TOGGLE_SWEEP_ILOOP_FS_100KHZ
 	// Current Loop 100kHz
 	if(HRTIM_TIMERINDEX_TIMER_A == TimerIdx)
 	{
 		HAL_GPIO_WritePin(GPIOC, GPIO_PIN_7, GPIO_PIN_SET);
-#if 1
+
 		SFRA_Run();
-		//g_sfra.phase_inc =(uint32_t)((g_sfra.current_freq* 4294967296.0f) / 100000.0f);
-#else
-		g_sfra.phase_inc =(uint32_t)((2123.0f* 4294967296.0f) / 100000.0f);
-#endif
 
 		// Create Sine Wave
 		// LUT index (top 13 bits)
@@ -271,6 +285,52 @@ void HAL_HRTIM_CounterResetCallback(HRTIM_HandleTypeDef * hhrtim, uint32_t Timer
 		HAL_GPIO_WritePin(GPIOC, GPIO_PIN_7, GPIO_PIN_RESET);
 
 	}
+#endif
+#if TOGGLE_SWEEP_VLOOP_FS_6KHZ
+	// Voltage Loop 6kHz
+	if(HRTIM_TIMERINDEX_TIMER_D == TimerIdx)
+	{
+		HAL_GPIO_WritePin(GPIOC, GPIO_PIN_7, GPIO_PIN_SET);
+		SFRA_Run();
+
+		// Create Sine Wave
+		// LUT index (top 13 bits)
+		g_sfra.index = g_sfra.phase_acc >> DDS_LUT_SHIFT;
+		g_sfra.phase_acc += g_sfra.phase_inc;
+
+		// Create the Injected Signal Sine Wave
+		g_sfra.sine_out = g_sfra.amplitude * g_sfra.sine_lut[g_sfra.index];						// Generated sine, injected to 2p2z
+		g_sfra.cosine_out = g_sfra.amplitude * g_sfra.sine_lut[(g_sfra.index + 2048) & 0x1FFF];	// Generated for testing only, not to be processed
+
+		// Create a reference signal sine and cosine
+		g_sfra.sine_ref = g_sfra.sine_lut[g_sfra.index];
+		g_sfra.cosine_ref = g_sfra.sine_lut[(g_sfra.index + 2048) & 0x1FFF];
+
+		// Run Compensator 2p2z
+		comp2p2z_vloop.f_ref = g_sfra.sine_out;
+		comp2p2z_vloop.f_fdbk = 0.0f;
+		compensator_2P2Z_Update(&comp2p2z_vloop);
+
+		// Accumulator During FSM Measuring
+		if(g_sfra.state == SFRA_STATE_MEASURING)
+		{
+		    g_sfra.input_I_acc += g_sfra.sine_out * g_sfra.sine_ref;
+
+		    g_sfra.input_Q_acc +=g_sfra.sine_out * g_sfra.cosine_ref;
+
+		    g_sfra.output_I_acc += comp2p2z_vloop.f_out * g_sfra.sine_ref;
+
+		    g_sfra.output_Q_acc += comp2p2z_vloop.f_out *g_sfra.cosine_ref;
+		}
+
+		// Output DAC Signals
+		HAL_DAC_SetValue(&hdac1, DAC_CHANNEL_1, DAC_ALIGN_12B_R, (uint16_t)(comp2p2z_vloop.f_ref+2048.0f));
+		HAL_DAC_SetValue(&hdac2, DAC_CHANNEL_1, DAC_ALIGN_12B_R,(uint16_t)(comp2p2z_vloop.f_out+2048.0f));
+		//HAL_DAC_SetValue(&hdac2, DAC_CHANNEL_1, DAC_ALIGN_12B_R,(uint16_t)(g_sfra.cosine_out+2048.0f));
+		HAL_GPIO_WritePin(GPIOC, GPIO_PIN_7, GPIO_PIN_RESET);
+
+	}
+#endif
 }
 
 /* USER CODE END 4 */

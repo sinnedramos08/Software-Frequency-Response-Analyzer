@@ -144,9 +144,9 @@ void SFRA_Calculate(void)
 void SFRA_UpdateFrequency(float freq)
 {
     g_sfra.current_freq = freq;
-    g_sfra.phase_inc =(uint32_t)(freq *4294967296.0f / 100000.0f);
-    g_sfra.settle_samples = (uint32_t)(SFRA_SETTLING_CYCLES*100000.0f /freq);
-    g_sfra.measure_samples = (uint32_t)(SFRA_MEASUREMENT_CYCLES * 100000.0f / freq);
+    g_sfra.phase_inc =(uint32_t)(freq *DDS_FULL_SCALE/ FLOAT_SFRA_FS_HZ);
+    g_sfra.settle_samples = (uint32_t)(SFRA_SETTLING_CYCLES*FLOAT_SFRA_FS_HZ/freq);
+    g_sfra.measure_samples = (uint32_t)(SFRA_MEASUREMENT_CYCLES * FLOAT_SFRA_FS_HZ/ freq);
     g_sfra.phase_acc = 0;
     g_sfra.index     = 0;
 }

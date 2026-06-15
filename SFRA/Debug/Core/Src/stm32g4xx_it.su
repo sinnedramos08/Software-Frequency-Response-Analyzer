@@ -9,3 +9,4 @@
 ../Core/Src/stm32g4xx_it.c:183:6:SysTick_Handler	8	static
 ../Core/Src/stm32g4xx_it.c:204:6:EXTI15_10_IRQHandler	8	static
 ../Core/Src/stm32g4xx_it.c:218:6:HRTIM1_TIMA_IRQHandler	8	static
+../Core/Src/stm32g4xx_it.c:232:6:HRTIM1_TIMD_IRQHandler	8	static

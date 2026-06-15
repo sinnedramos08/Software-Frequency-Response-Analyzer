@@ -11,37 +11,45 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-#define TOGGLE_SWEEP_ILOOP_FS_100KHZ		(1U)
-#define TOGGLE_SWEEP_VLOOP_FS_6KHZ			(0U)
+#define TOGGLE_SWEEP_ILOOP_FS_100KHZ		(0U)
+#define TOGGLE_SWEEP_VLOOP_FS_6KHZ			(1U)
+
 
 #if TOGGLE_SWEEP_ILOOP_FS_100KHZ
 #define FLOAT_SFRA_FS_HZ                 	(100000.0f)
-#elif TOGGLE_SWEEP_VLOOP_FS_6KHZ
-#define FLOAT_SFRA_FS_HZ                 	(6000.0f)
-#endif
-
 #define SFRA_SETTLING_CYCLES       			(50U)	// Number of cycles to be waited before it settles
 #define SFRA_MEASUREMENT_CYCLES    			(50U)	// Number of Cycles to be calculated
+
+#elif TOGGLE_SWEEP_VLOOP_FS_6KHZ
+#define FLOAT_SFRA_FS_HZ                 	(6000.0f)
+#define SFRA_SETTLING_CYCLES       			(5U)	// Number of cycles to be waited before it settles
+#define SFRA_MEASUREMENT_CYCLES    			(5U)	// Number of Cycles to be calculated
+#endif
+
 
 #define FLOAT_V_TO_ADC(voltage) 			((float)(voltage) * 4095.0f / 3.3f)
 #define SINE_INJECTED_AMPLITUDE_VOLTS		(0.75f)	// Amplitude of Injected Signal in Volts (0.5V to 1V)
 #define SINE_INJECTED_AMPLITUDE_ADC			FLOAT_V_TO_ADC(SINE_INJECTED_AMPLITUDE_VOLTS)
 
-#define DDS_PHASE_BITS    					32
-#define DDS_LUT_BITS      					13
-#define DDS_LUT_SIZE      					8192
-#define DDS_LUT_SHIFT     					(DDS_PHASE_BITS - DDS_LUT_BITS)
 
 // For defining the frequencies in sweep
-#define FREQ_POINTS_PER_DECADE				(20U) // Can only Vary from 10 to 50 Points Per Decade
+#define FREQ_POINTS_PER_DECADE				(10U) // Can only Vary from 10 to 50 Points Per Decade
 #if TOGGLE_SWEEP_ILOOP_FS_100KHZ
 #define FREQ_START_HZ						(10)
 #define	FREQ_STOP_HZ						(40000U)	// Considered Nyquist Frequency: Fsampling>2Fsampled
 #elif TOGGLE_SWEEP_VLOOP_FS_6KHZ
 #define FREQ_START_HZ						(1)
-#define	FREQ_STOP_HZ						(3000U)		// Considered Nyquist Frequency: Fsampling>2Fsampled
+#define	FREQ_STOP_HZ						(2500U)		// Considered Nyquist Frequency: Fsampling>2Fsampled
 #endif
 #define SFRA_FREQ_BUFFER_MAX_POINTS(points)       	((4U * points) + 5U)	// (4 Decades*Points per Decade) + Margin
+
+
+// For Bit Manipulation in Sine Wave Generation
+#define DDS_PHASE_BITS    					32
+#define DDS_LUT_BITS      					13
+#define DDS_LUT_SIZE      					8192
+#define DDS_LUT_SHIFT     					(DDS_PHASE_BITS - DDS_LUT_BITS)
+#define DDS_FULL_SCALE						(4294967296.0f)	// 2^32
 
 
 typedef enum
