@@ -118,6 +118,11 @@ typedef struct
 	bool b_end_flag;
     bool b_result_ready_flag;
 
+    /* Total Time Elapsed Measurement */
+    uint32_t start_time_ms;
+    uint32_t end_time_ms;
+    uint32_t elapsed_time_ms;
+
     /* Look Up Table Sine */
     float	sine_lut[DDS_LUT_SIZE];
 } sfra_t;

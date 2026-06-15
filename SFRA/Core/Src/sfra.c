@@ -31,6 +31,8 @@ void SFRA_Run(void)
     {
 		case SFRA_STATE_INIT:
 
+			g_sfra.start_time_ms = HAL_GetTick();
+
 			g_sfra.b_start_flag = true;
 
 			g_sfra.freq_index = 0;
@@ -98,6 +100,11 @@ void SFRA_Run(void)
             break;
 
         case SFRA_STATE_DONE:
+            g_sfra.end_time_ms = HAL_GetTick();
+
+            g_sfra.elapsed_time_ms = g_sfra.end_time_ms - g_sfra.start_time_ms;
+
+
 			g_sfra.b_end_flag = true;
 			g_sfra.state = SFRA_STATE_STOP;
         	break;
