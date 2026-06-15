@@ -11,19 +11,22 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-#define TOGGLE_SWEEP_ILOOP_FS_100KHZ		(0U)
-#define TOGGLE_SWEEP_VLOOP_FS_6KHZ			(1U)
+#define TOGGLE_SWEEP_ILOOP_FS_100KHZ		(1U)
+#define TOGGLE_SWEEP_VLOOP_FS_6KHZ			(0U)
 
 
 #if TOGGLE_SWEEP_ILOOP_FS_100KHZ
 #define FLOAT_SFRA_FS_HZ                 	(100000.0f)
 #define SFRA_SETTLING_CYCLES       			(50U)	// Number of cycles to be waited before it settles
 #define SFRA_MEASUREMENT_CYCLES    			(50U)	// Number of Cycles to be calculated
+#define STRING_MESSAGE_SWEEP_NAME			"ILOOP 100KHZ"
 
 #elif TOGGLE_SWEEP_VLOOP_FS_6KHZ
 #define FLOAT_SFRA_FS_HZ                 	(6000.0f)
-#define SFRA_SETTLING_CYCLES       			(5U)	// Number of cycles to be waited before it settles
-#define SFRA_MEASUREMENT_CYCLES    			(5U)	// Number of Cycles to be calculated
+#define SFRA_SETTLING_CYCLES       			(10U)	// Number of cycles to be waited before it settles
+#define SFRA_MEASUREMENT_CYCLES    			(10U)	// Number of Cycles to be calculated
+#define STRING_MESSAGE_SWEEP_NAME			"VLOOP 6KHZ"
+
 #endif
 
 
@@ -33,12 +36,12 @@
 
 
 // For defining the frequencies in sweep
-#define FREQ_POINTS_PER_DECADE				(10U) // Can only Vary from 10 to 50 Points Per Decade
+#define FREQ_POINTS_PER_DECADE				(20U) // Can only Vary from 10 to 50 Points Per Decade
 #if TOGGLE_SWEEP_ILOOP_FS_100KHZ
-#define FREQ_START_HZ						(10)
+#define FREQ_START_HZ						(10U)
 #define	FREQ_STOP_HZ						(40000U)	// Considered Nyquist Frequency: Fsampling>2Fsampled
 #elif TOGGLE_SWEEP_VLOOP_FS_6KHZ
-#define FREQ_START_HZ						(1)
+#define FREQ_START_HZ						(1U)
 #define	FREQ_STOP_HZ						(2500U)		// Considered Nyquist Frequency: Fsampling>2Fsampled
 #endif
 #define SFRA_FREQ_BUFFER_MAX_POINTS(points)       	((4U * points) + 5U)	// (4 Decades*Points per Decade) + Margin

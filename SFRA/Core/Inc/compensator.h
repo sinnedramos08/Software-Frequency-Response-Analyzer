@@ -17,6 +17,33 @@
 #define MIN(a,b)   ((a)<(b) ? (b) : (a))
 #define MAX(a,b)   ((a)>(b) ? (b) : (a))
 
+// Coefficients:
+#define USE_120VAC_380VDC_PLD	(1U)
+
+#if USE_120VAC_380VDC_PLD
+#define B0_I (+0.0221447567575377)
+#define B1_I (+0.0002257971094560)
+#define B2_I (-0.0219189596480817)
+#define A1_I (+0.7779690592966855)
+#define A2_I (+0.2220309407033146)
+
+#define B0_V (+0.2476368622951489)
+#define B1_V (+0.0006598251225833)
+#define B2_V (-0.2469770371725656)
+#define A1_V (+1.9800607277045987)
+#define A2_V (-0.9800607277045986)
+
+#define STRING_OPERATION	"120VAC 380VDC 500W"
+#define STRING_ILOOP_FX		"ILOOP FX: 6KHZ"
+#define STRING_ILOOP_PM		"ILOOP GM: 60DEG"
+#define STRING_ILOOP_GM		"ILOOP PM: >31DB"
+
+#define STRING_VLOOP_FX		"VLOOP FX: 7HZ"
+#define STRING_VLOOP_PM		"VLOOP PM: 50DEG"
+#define STRING_VLOOP_GM		"ILOOP PM: >77DB"
+#endif
+
+
 //Custom structures
 
 typedef struct

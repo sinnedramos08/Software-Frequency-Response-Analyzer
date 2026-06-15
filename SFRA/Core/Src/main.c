@@ -52,17 +52,7 @@
 #define HRTIM_PERIOD				FREQ_HZ_TO_PWM_TICKS(SWITCHING_FREQ)
 #define PI_F       (3.14159265359f)
 
-#define B0_I (+0.0223702374699705)
-#define B1_I (+0.0009488373469669)
-#define B2_I (-0.0214214001230036)
-#define A1_I (+0.7779690592966855)
-#define A2_I (+0.2220309407033146)
 
-#define B0_V (+0.2476368622951489)
-#define B1_V (+0.0006598251225833)
-#define B2_V (-0.2469770371725656)
-#define A1_V (+1.9800607277045987)
-#define A2_V (-0.9800607277045986)
 
 
 /* USER CODE END PD */
@@ -170,13 +160,38 @@ int main(void)
   {
 	if(g_sfra.b_start_flag){
 		g_sfra.b_start_flag = false;
-		printf("\r\nStarting Frequency Sweep\r\n\r\n");
+		printf("\r\nStarting Frequency Sweep: %s\r\n", STRING_MESSAGE_SWEEP_NAME);
+		printf("Operating Condition: %s\r\n", STRING_OPERATION);
+#if TOGGLE_SWEEP_ILOOP_FS_100KHZ
+		printf("ILOOP Parameters: %s, %s, %s\r\n", STRING_ILOOP_FX, STRING_ILOOP_PM, STRING_ILOOP_GM);
+		printf("ILOOP Coefficients: B0:%f B1:%f B2:%f A1:%f A2:%f\r\n\r\n", B0_I, B1_I, B2_I, A1_I, A2_I);
+#elif
+		printf("VLOOP Parameters: %s, %s, %s\r\n", STRING_VLOOP_FX, STRING_VLOOP_PM, STRING_VLOOP_GM);
+		printf("VLOOP Coefficients: B0:%f B1:%f B2:%f A1:%f A2:%f\r\n\r\n", B0_V, B1_V, B2_V, A1_V, A2_V);
+#endif
+
 		printf("frequency,magnitude_db,phase_deg\r\n");
 	}
+
+
+
+
 	if(g_sfra.b_result_ready_flag)
 	{
+#if TOGGLE_SWEEP_ILOOP_FS_100KHZ
 		g_sfra.b_result_ready_flag = false;
 		printf("%f,%f,%f\r\n", g_sfra.freq_table[g_sfra.freq_index-1], g_sfra.gain_db[g_sfra.freq_index-1], g_sfra.phase_deg[g_sfra.freq_index-1]);
+#elif TOGGLE_SWEEP_VLOOP_FS_6KHZ
+		g_sfra.b_result_ready_flag = false;
+		if (g_sfra.current_freq ==(float)(FREQ_START_HZ))
+		{
+
+		}
+		else
+		{
+			printf("%f,%f,%f\r\n", g_sfra.freq_table[g_sfra.freq_index-1], g_sfra.gain_db[g_sfra.freq_index-1], g_sfra.phase_deg[g_sfra.freq_index-1]);
+		}
+#endif
 	}
 	if(g_sfra.b_end_flag){
 		g_sfra.b_end_flag = false;
