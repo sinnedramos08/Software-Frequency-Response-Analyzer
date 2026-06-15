@@ -199,8 +199,9 @@ int main(void)
 	if(g_sfra.b_end_flag){
 		g_sfra.b_end_flag = false;
 		printf("%f,%f,%f\r\n", g_sfra.freq_table[g_sfra.freq_index-1], g_sfra.gain_db[g_sfra.freq_index-1], g_sfra.phase_deg[g_sfra.freq_index-1]);
+	    printf("\r\nElapsed Time: %.2f sec\r\n", g_sfra.elapsed_time_ms / 1000.0f);
 		printf("\r\nEnd of Frequency Sweep\r\n");
-	    printf("Elapsed Time: %.2f sec\r\n", g_sfra.elapsed_time_ms / 1000.0f);
+
 	}
 
     /* USER CODE END WHILE */

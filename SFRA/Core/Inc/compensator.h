@@ -40,7 +40,7 @@
 
 #define STRING_VLOOP_FX		"VLOOP FX: 7HZ"
 #define STRING_VLOOP_PM		"VLOOP PM: 50DEG"
-#define STRING_VLOOP_GM		"ILOOP PM: >77DB"
+#define STRING_VLOOP_GM		"VLOOP PM: >77DB"
 #endif
 
 

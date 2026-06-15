@@ -11,8 +11,8 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-#define TOGGLE_SWEEP_ILOOP_FS_100KHZ		(0U)
-#define TOGGLE_SWEEP_VLOOP_FS_6KHZ			(1U)
+#define TOGGLE_SWEEP_ILOOP_FS_100KHZ		(1U)
+#define TOGGLE_SWEEP_VLOOP_FS_6KHZ			(0U)
 
 
 #if TOGGLE_SWEEP_ILOOP_FS_100KHZ
