@@ -9,11 +9,12 @@
 #define SFRA_H_
 
 #include <stdint.h>
+#include <stdbool.h>
 
 #define SFRA_FS_HZ                 	(100000.0f)
 
-#define SFRA_SETTLING_CYCLES       	(500U)	// Number of cycles to be waited before it settles
-#define SFRA_MEASUREMENT_CYCLES    	(500U)	// Number of Cycles to be calculated
+#define SFRA_SETTLING_CYCLES       	(50U)	// Number of cycles to be waited before it settles
+#define SFRA_MEASUREMENT_CYCLES    	(50U)	// Number of Cycles to be calculated
 
 #define SFRA_MAX_FREQ_POINTS       	(50U)	// For higher number of frequency points per decade
 
@@ -30,7 +31,8 @@ typedef enum
     SFRA_STATE_MEASURING,
     SFRA_STATE_CALCULATE,
     SFRA_STATE_NEXT_FREQ,
-    SFRA_STATE_DONE
+    SFRA_STATE_DONE,
+	SFRA_STATE_STOP
 
 } sfra_state_t;
 
@@ -81,7 +83,9 @@ typedef struct
     float phase_deg[SFRA_MAX_FREQ_POINTS];
 
     /* Flag Reporting */
-    uint8_t result_ready;
+    bool b_start_flag;
+	bool b_end_flag;
+    bool b_result_ready_flag;
 
     /* Look Up Table Sine */
     float	sine_lut[DDS_LUT_SIZE];

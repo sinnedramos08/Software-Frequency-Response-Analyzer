@@ -29,6 +29,7 @@
 #include "sfra.h"
 #include "stdio.h"
 #include "stdint.h"
+#include <stdbool.h>
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -52,9 +53,9 @@
 #define PI_F       (3.14159265359f)
 #define FS_HZ      (100000.0f)
 
-#define B0_I (+0.0221447567575377)
-#define B1_I (+0.0002257971094560)
-#define B2_I (-0.0219189596480817)
+#define B0_I (+0.0223702374699705)
+#define B1_I (+0.0009488373469669)
+#define B2_I (-0.0214214001230036)
 #define A1_I (+0.7779690592966855)
 #define A2_I (+0.2220309407033146)
 
@@ -90,8 +91,7 @@ void SystemClock_Config(void);
   */
 int main(void)
 {
-
-  /* USER CODE BEGIN 1 */
+	/* USER CODE BEGIN 1 */
 
   /* USER CODE END 1 */
 
@@ -127,8 +127,6 @@ int main(void)
   HAL_HRTIM_WaveformCountStart_IT(&hhrtim1, HRTIM_TIMERID_TIMER_A);
   HAL_HRTIM_WaveformOutputStart(&hhrtim1, HRTIM_OUTPUT_TA1|HRTIM_OUTPUT_TA2);
 
-  g_sfra.result_ready=0;
-  printf("Start\n\n");
 
 
   /* USER CODE END 2 */
@@ -154,12 +152,20 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-
-	if(g_sfra.result_ready)
+	if(g_sfra.b_start_flag){
+		g_sfra.b_start_flag = false;
+		printf("\r\nStarting Frequency Sweep\r\n\r\n");
+		printf("frequency,magnitude_db,phase_deg\r\n");
+	}
+	if(g_sfra.b_result_ready_flag)
 	{
-		g_sfra.result_ready = 0;
+		g_sfra.b_result_ready_flag = false;
 		printf("%f,%f,%f\r\n", g_sfra.freq_table[g_sfra.freq_index-1], g_sfra.gain_db[g_sfra.freq_index-1], g_sfra.phase_deg[g_sfra.freq_index-1]);
-
+	}
+	if(g_sfra.b_end_flag){
+		g_sfra.b_end_flag = false;
+		printf("%f,%f,%f\r\n", g_sfra.freq_table[g_sfra.freq_index-1], g_sfra.gain_db[g_sfra.freq_index-1], g_sfra.phase_deg[g_sfra.freq_index-1]);
+		printf("\r\nEnd of Frequency Sweep\r\n");
 	}
 
     /* USER CODE END WHILE */
