@@ -11,17 +11,29 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-#define SFRA_FS_HZ                 	(100000.0f)
+#define TOGGLE_SWEEP_ILOOP_FS_100KHZ		(1U)
+#define TOGGLE_SWEEP_VLOOP_FS_6KHZ			(0U)
 
-#define SFRA_SETTLING_CYCLES       	(50U)	// Number of cycles to be waited before it settles
-#define SFRA_MEASUREMENT_CYCLES    	(50U)	// Number of Cycles to be calculated
+#if TOGGLE_SWEEP_ILOOP_FS_100KHZ
+#define FLOAT_SFRA_FS_HZ                 	(100000.0f)
+#elif TOGGLE_SWEEP_VLOOP_FS_6KHZ
+#define FLOAT_SFRA_FS_HZ                 	(6000.0f)
+#endif
 
-#define SFRA_MAX_FREQ_POINTS       	(50U)	// For higher number of frequency points per decade
+#define SFRA_SETTLING_CYCLES       			(500U)	// Number of cycles to be waited before it settles
+#define SFRA_MEASUREMENT_CYCLES    			(500U)	// Number of Cycles to be calculated
 
-#define DDS_PHASE_BITS    32
-#define DDS_LUT_BITS      13
-#define DDS_LUT_SIZE      8192
-#define DDS_LUT_SHIFT     (DDS_PHASE_BITS - DDS_LUT_BITS)
+#define SFRA_MAX_FREQ_POINTS       			(50U)	// For higher number of frequency points per decade
+
+#define FLOAT_V_TO_ADC(voltage) 			((float)(voltage) * 4095.0f / 3.3f)
+#define SINE_INJECTED_AMPLITUDE_VOLTS		(0.75f)	// Amplitude of Injected Signal in Volts (0.5V to 1V)
+#define SINE_INJECTED_AMPLITUDE_ADC			FLOAT_V_TO_ADC(SINE_INJECTED_AMPLITUDE_VOLTS)
+
+#define DDS_PHASE_BITS    					32
+#define DDS_LUT_BITS      					13
+#define DDS_LUT_SIZE      					8192
+#define DDS_LUT_SHIFT     					(DDS_PHASE_BITS - DDS_LUT_BITS)
+
 
 
 typedef enum
@@ -89,8 +101,6 @@ typedef struct
 
     /* Look Up Table Sine */
     float	sine_lut[DDS_LUT_SIZE];
-
-
 } sfra_t;
 
 extern sfra_t g_sfra;

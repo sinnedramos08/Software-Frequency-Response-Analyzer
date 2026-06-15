@@ -39,7 +39,7 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-#define KI_LOOP			(float)(1.0f / (G2 * GADC))
+#define KI_LOOP						(float)(1.0f / (G2 * GADC))
 #define GADC						(float)(1240.909091f)		//(1240.909091f)					//(1105)				//1240.909091f	//ADC Gain = 4095/3.3
 #define G2							(float)(0.066f) // (0.250f)				//Hall Sensor Gain = 250mV/A
 #define G3							(float)(0.00298923138f)//(0.002609997838f)//(0.00309512f)		//VIN Gain
@@ -53,9 +53,9 @@
 #define PI_F       (3.14159265359f)
 #define FS_HZ      (100000.0f)
 
-#define B0_I (+0.0223702374699705)
-#define B1_I (+0.0009488373469669)
-#define B2_I (-0.0214214001230036)
+#define B0_I (+0.0224254671677381)
+#define B1_I (+0.0016646563593436)
+#define B2_I (-0.0207608108083944)
 #define A1_I (+0.7779690592966855)
 #define A2_I (+0.2220309407033146)
 

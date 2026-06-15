@@ -35,17 +35,17 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   CONTENTS, READONLY, DEBUGGING, OCTETS
  15 .debug_rnglists 00000c85  00000000  00000000  00024500  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 16 .debug_macro  00029a80  00000000  00000000  00025185  2**0
+ 16 .debug_macro  00029a9e  00000000  00000000  00025185  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 17 .debug_line   00013fc4  00000000  00000000  0004ec05  2**0
+ 17 .debug_line   00013fc4  00000000  00000000  0004ec23  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 18 .debug_str    0010f928  00000000  00000000  00062bc9  2**0
+ 18 .debug_str    0010fa1e  00000000  00000000  00062be7  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 19 .comment      00000043  00000000  00000000  001724f1  2**0
+ 19 .comment      00000043  00000000  00000000  00172605  2**0
                   CONTENTS, READONLY
- 20 .debug_frame  00005720  00000000  00000000  00172534  2**2
+ 20 .debug_frame  00005720  00000000  00000000  00172648  2**2
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 21 .debug_line_str 00000061  00000000  00000000  00177c54  2**0
+ 21 .debug_line_str 00000061  00000000  00000000  00177d68  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
 
 Disassembly of section .text:
@@ -2266,9 +2266,9 @@ int main(void)
 	if(g_sfra.b_start_flag){
  8001810:	e774      	b.n	80016fc <main+0xac>
  8001812:	bf00      	nop
- 8001814:	bcaf7bef 	.word	0xbcaf7bef
- 8001818:	3a78bb65 	.word	0x3a78bb65
- 800181c:	3cb741ca 	.word	0x3cb741ca
+ 8001814:	bcaa1293 	.word	0xbcaa1293
+ 8001818:	3ada3099 	.word	0x3ada3099
+ 800181c:	3cb7b59d 	.word	0x3cb7b59d
  8001820:	3e635c14 	.word	0x3e635c14
  8001824:	3f4728fb 	.word	0x3f4728fb
  8001828:	00000000 	.word	0x00000000
@@ -2645,6 +2645,7 @@ void LUT_Init(void)
  8001ac8:	b580      	push	{r7, lr}
  8001aca:	b082      	sub	sp, #8
  8001acc:	af00      	add	r7, sp, #0
+	/* For Sine Look Up Table */
     for(int i = 0; i < DDS_LUT_SIZE; i++){
  8001ace:	2300      	movs	r3, #0
  8001ad0:	607b      	str	r3, [r7, #4]
@@ -3111,7 +3112,7 @@ void SFRA_UpdateFrequency(float freq)
  8001e7c:	20000398 	.word	0x20000398
  8001e80:	4f800000 	.word	0x4f800000
  8001e84:	47c35000 	.word	0x47c35000
- 8001e88:	4a989680 	.word	0x4a989680
+ 8001e88:	4c3ebc20 	.word	0x4c3ebc20
 
 08001e8c <SFRA_Init>:
 void SFRA_Init(void)
@@ -3251,7 +3252,7 @@ void SFRA_Init(void)
  8001f54:	221e      	movs	r2, #30
  8001f56:	809a      	strh	r2, [r3, #4]
 
-    g_sfra.amplitude = 1240.9090f;
+    g_sfra.amplitude = SINE_INJECTED_AMPLITUDE_ADC;	// For 1V Amplitude Signal in Oscilloscope
  8001f58:	4b06      	ldr	r3, [pc, #24]	@ (8001f74 <SFRA_Init+0xe8>)
  8001f5a:	4a25      	ldr	r2, [pc, #148]	@ (8001ff0 <SFRA_Init+0x164>)
  8001f5c:	f8c3 20e0 	str.w	r2, [r3, #224]	@ 0xe0
@@ -3299,7 +3300,7 @@ void SFRA_Init(void)
  8001fe4:	46c41800 	.word	0x46c41800
  8001fe8:	46f6e000 	.word	0x46f6e000
  8001fec:	471b7800 	.word	0x471b7800
- 8001ff0:	449b1d17 	.word	0x449b1d17
+ 8001ff0:	4468aba3 	.word	0x4468aba3
 
 08001ff4 <HAL_MspInit>:
  8001ff4:	b580      	push	{r7, lr}

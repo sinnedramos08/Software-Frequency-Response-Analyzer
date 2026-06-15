@@ -1,5 +1,5 @@
 ../Core/Src/sfra.c:19:6:LUT_Init	2
-../Core/Src/sfra.c:27:6:SFRA_Run	10
-../Core/Src/sfra.c:113:6:SFRA_Calculate	1
-../Core/Src/sfra.c:143:6:SFRA_UpdateFrequency	1
-../Core/Src/sfra.c:152:6:SFRA_Init	1
+../Core/Src/sfra.c:28:6:SFRA_Run	10
+../Core/Src/sfra.c:114:6:SFRA_Calculate	1
+../Core/Src/sfra.c:144:6:SFRA_UpdateFrequency	1
+../Core/Src/sfra.c:153:6:SFRA_Init	1

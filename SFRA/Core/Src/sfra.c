@@ -18,6 +18,7 @@ sfra_t g_sfra;
 
 void LUT_Init(void)
 {
+	/* For Sine Look Up Table */
     for(int i = 0; i < DDS_LUT_SIZE; i++){
     	g_sfra.sine_lut[i] = sinf(2.0f * PI_F * ((float)i / (float)DDS_LUT_SIZE));
     }
@@ -187,7 +188,7 @@ void SFRA_Init(void)
     g_sfra.freq_table[29] = 39800.0f;
     g_sfra.num_freqs = 30;
 
-    g_sfra.amplitude = 1240.9090f;
+    g_sfra.amplitude = SINE_INJECTED_AMPLITUDE_ADC;	// For 1V Amplitude Signal in Oscilloscope
 
     g_sfra.state = SFRA_STATE_INIT;
     g_sfra.b_result_ready_flag=false;
