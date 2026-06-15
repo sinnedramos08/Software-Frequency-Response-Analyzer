@@ -11,8 +11,8 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-#define TOGGLE_SWEEP_ILOOP_FS_100KHZ		(1U)
-#define TOGGLE_SWEEP_VLOOP_FS_6KHZ			(0U)
+#define TOGGLE_SWEEP_ILOOP_FS_100KHZ		(0U)
+#define TOGGLE_SWEEP_VLOOP_FS_6KHZ			(1U)
 
 
 #if TOGGLE_SWEEP_ILOOP_FS_100KHZ
@@ -36,7 +36,7 @@
 
 
 // For defining the frequencies in sweep
-#define FREQ_POINTS_PER_DECADE				(20U) // Can only Vary from 10 to 50 Points Per Decade
+#define FREQ_POINTS_PER_DECADE				(50U) // Can only Vary from 10 to 50 Points Per Decade
 #if TOGGLE_SWEEP_ILOOP_FS_100KHZ
 #define FREQ_START_HZ						(10U)
 #define	FREQ_STOP_HZ						(40000U)	// Considered Nyquist Frequency: Fsampling>2Fsampled

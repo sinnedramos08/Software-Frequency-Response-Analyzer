@@ -165,7 +165,7 @@ int main(void)
 #if TOGGLE_SWEEP_ILOOP_FS_100KHZ
 		printf("ILOOP Parameters: %s, %s, %s\r\n", STRING_ILOOP_FX, STRING_ILOOP_PM, STRING_ILOOP_GM);
 		printf("ILOOP Coefficients: B0:%f B1:%f B2:%f A1:%f A2:%f\r\n\r\n", B0_I, B1_I, B2_I, A1_I, A2_I);
-#elif
+#elif TOGGLE_SWEEP_VLOOP_FS_6KHZ
 		printf("VLOOP Parameters: %s, %s, %s\r\n", STRING_VLOOP_FX, STRING_VLOOP_PM, STRING_VLOOP_GM);
 		printf("VLOOP Coefficients: B0:%f B1:%f B2:%f A1:%f A2:%f\r\n\r\n", B0_V, B1_V, B2_V, A1_V, A2_V);
 #endif
