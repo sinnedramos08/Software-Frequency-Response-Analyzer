@@ -153,7 +153,7 @@ void SFRA_UpdateFrequency(float freq)
 void SFRA_Init(void)
 {
     memset(&g_sfra, 0, sizeof(g_sfra));
-
+#if 0
     g_sfra.freq_table[0]  = 50.0f;
     g_sfra.freq_table[1]  = 63.1f;
     g_sfra.freq_table[2]  = 79.4f;
@@ -187,12 +187,41 @@ void SFRA_Init(void)
     g_sfra.freq_table[28] = 31600.0f;
     g_sfra.freq_table[29] = 39800.0f;
     g_sfra.num_freqs = 30;
+#endif
+    SFRA_GenerateFrequencyTable();
 
+    // Initialize Control Variables
     g_sfra.amplitude = SINE_INJECTED_AMPLITUDE_ADC;	// For 1V Amplitude Signal in Oscilloscope
-
     g_sfra.state = SFRA_STATE_INIT;
     g_sfra.b_result_ready_flag=false;
+
 }
 
+void SFRA_GenerateFrequencyTable(void){
+    float decades;
+    float ratio;
 
+    // Get number of Decades - ~4 Decades from 10Hz to 40kHz
+    decades = log10f((float)(FREQ_STOP_HZ)/(float)(FREQ_START_HZ)); // Number of decades = log(40000/10)
 
+    // Get number of frequency based on number of decades and points per decade
+    g_sfra.num_freqs =(uint16_t)(decades * FREQ_POINTS_PER_DECADE) + 1U; // (3.6*10)+1=37 frequencies
+
+    // Using Logarithmic scale, we need to have common ratio (not common difference) between frequency points
+    // Since we need X data points per decade, formula: ratio = 10^(1/x)
+    ratio = powf(10.0f,1.0f/(float)(FREQ_POINTS_PER_DECADE));
+
+    // Populate the Frequency Buffer
+
+    // First Frequency at index 0 -> Start Frequency
+    g_sfra.freq_table[0] = (float)FREQ_START_HZ;
+
+    // Populate with Geometric Ratio
+    for(uint16_t i = 1U;i < g_sfra.num_freqs;i++){
+    	g_sfra.freq_table[i] = g_sfra.freq_table[i - 1U] * ratio;
+    }
+
+    // Last Frequency at index #frequency-1-> Stop Frequency
+    g_sfra.freq_table[g_sfra.num_freqs - 1U] = (float)FREQ_STOP_HZ;
+
+}

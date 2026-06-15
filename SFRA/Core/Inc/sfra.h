@@ -20,10 +20,8 @@
 #define FLOAT_SFRA_FS_HZ                 	(6000.0f)
 #endif
 
-#define SFRA_SETTLING_CYCLES       			(500U)	// Number of cycles to be waited before it settles
-#define SFRA_MEASUREMENT_CYCLES    			(500U)	// Number of Cycles to be calculated
-
-#define SFRA_MAX_FREQ_POINTS       			(50U)	// For higher number of frequency points per decade
+#define SFRA_SETTLING_CYCLES       			(50U)	// Number of cycles to be waited before it settles
+#define SFRA_MEASUREMENT_CYCLES    			(50U)	// Number of Cycles to be calculated
 
 #define FLOAT_V_TO_ADC(voltage) 			((float)(voltage) * 4095.0f / 3.3f)
 #define SINE_INJECTED_AMPLITUDE_VOLTS		(0.75f)	// Amplitude of Injected Signal in Volts (0.5V to 1V)
@@ -34,6 +32,16 @@
 #define DDS_LUT_SIZE      					8192
 #define DDS_LUT_SHIFT     					(DDS_PHASE_BITS - DDS_LUT_BITS)
 
+// For defining the frequencies in sweep
+#define FREQ_POINTS_PER_DECADE				(20U) // Can only Vary from 10 to 50 Points Per Decade
+#if TOGGLE_SWEEP_ILOOP_FS_100KHZ
+#define FREQ_START_HZ						(10)
+#define	FREQ_STOP_HZ						(40000U)	// Considered Nyquist Frequency: Fsampling>2Fsampled
+#elif TOGGLE_SWEEP_VLOOP_FS_6KHZ
+#define FREQ_START_HZ						(1)
+#define	FREQ_STOP_HZ						(3000U)		// Considered Nyquist Frequency: Fsampling>2Fsampled
+#endif
+#define SFRA_FREQ_BUFFER_MAX_POINTS(points)       	((4U * points) + 5U)	// (4 Decades*Points per Decade) + Margin
 
 
 typedef enum
@@ -57,7 +65,7 @@ typedef struct
     uint16_t freq_index; 	// Frequency table index
     uint16_t num_freqs;		// Number of frequencies to sweep. When freq_index>=num_freqs, then done sweep
     float current_freq;		// Current frequency tested
-    float freq_table[SFRA_MAX_FREQ_POINTS]; // Array for storing frequencies to test
+    float freq_table[SFRA_FREQ_BUFFER_MAX_POINTS(FREQ_POINTS_PER_DECADE)]; // Array for storing frequencies to test
 
     /* Signal Generator */
 
@@ -91,8 +99,8 @@ typedef struct
     float debug_amp;
 	float debug_phase;
 
-    float gain_db[SFRA_MAX_FREQ_POINTS];
-    float phase_deg[SFRA_MAX_FREQ_POINTS];
+    float gain_db[SFRA_FREQ_BUFFER_MAX_POINTS(FREQ_POINTS_PER_DECADE)];
+    float phase_deg[SFRA_FREQ_BUFFER_MAX_POINTS(FREQ_POINTS_PER_DECADE)];
 
     /* Flag Reporting */
     bool b_start_flag;
@@ -110,5 +118,6 @@ void SFRA_Run(void);
 void SFRA_Run_Meas(void);
 void SFRA_Calculate(void);
 void SFRA_UpdateFrequency(float freq);
+void SFRA_GenerateFrequencyTable(void);
 void LUT_Init(void);
 #endif
