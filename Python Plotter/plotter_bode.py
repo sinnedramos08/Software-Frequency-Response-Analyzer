@@ -11,7 +11,7 @@ import serial
 # Configuration
 SERIAL_PORT = "COM6"          # Change this to your serial port
 SERIAL_BAUD = 115200           # Change this if your UART uses another baud rate
-COMPARE_CSV_PATH = ""         # Set to a compare CSV path, or leave empty to disable
+COMPARE_CSV_PATH = "SIM_ILOOP_FX_6KHZ_PM_60DEG_GM_31DB.csv"         # Set to a compare CSV path, or leave empty to disable
 SAVE_FILENAME = "sweep_data.csv"  # Default file name for UART sweep save
 
 
@@ -53,8 +53,7 @@ def load_csv_data(filename: str) -> Tuple[List[float], List[float], List[float]]
 
 def build_csv_name_from_header(line: str) -> str:
     header = line.split("ILOOP Parameters:", 1)[-1].strip()
-    parts = []
-    prefix = None
+    parts = {}
     for segment in header.split(","):
         item = segment.strip()
         if not item:
@@ -62,16 +61,43 @@ def build_csv_name_from_header(line: str) -> str:
         match = re.match(r"(?:ILOOP\s+)?(.+?)\s*:\s*(.+)", item, flags=re.IGNORECASE)
         if not match:
             continue
-        if prefix is None and item.upper().startswith("ILOOP "):
-            prefix = "ILOOP"
-        key = re.sub(r"\s+", "_", match.group(1).strip())
-        value = re.sub(r"[^A-Za-z0-9]+", "", match.group(2).strip())
-        parts.append(f"{key}_{value}")
-    if not parts:
+        key = match.group(1).strip()
+        value = match.group(2).strip()
+        parts[key] = value
+
+    # Build filename parts in consistent order
+    result = []
+    if "FX" in parts:
+        val = re.sub(r"[^A-Za-z0-9]+", "", parts["FX"])
+        result.append(f"FX_{val}")
+    
+    # Detect and fix swapped GM/PM (GM should be DB, PM should be DEG)
+    gm_val = parts.get("GM", "")
+    pm_val = parts.get("PM", "")
+    
+    if gm_val and pm_val:
+        gm_clean = re.sub(r"[^A-Za-z0-9]+", "", gm_val)
+        pm_clean = re.sub(r"[^A-Za-z0-9]+", "", pm_val)
+        gm_unit = re.sub(r"[0-9]+", "", gm_val).strip().upper()
+        pm_unit = re.sub(r"[0-9]+", "", pm_val).strip().upper()
+        
+        # If GM has DEG and PM has DB, they're swapped—fix it
+        if "DEG" in gm_unit and "DB" in pm_unit:
+            result.append(f"PM_{gm_clean}")
+            result.append(f"GM_{pm_clean}")
+        else:
+            result.append(f"GM_{gm_clean}")
+            result.append(f"PM_{pm_clean}")
+    elif gm_val:
+        val = re.sub(r"[^A-Za-z0-9]+", "", gm_val)
+        result.append(f"GM_{val}")
+    elif pm_val:
+        val = re.sub(r"[^A-Za-z0-9]+", "", pm_val)
+        result.append(f"PM_{val}")
+    
+    if not result:
         return "sweep_data.csv"
-    if prefix:
-        return f"{prefix}_{'_'.join(parts)}.csv"
-    return f"{'_'.join(parts)}.csv"
+    return f"ILOOP_{'_'.join(result)}.csv"
 
 
 def plot_bode(
@@ -89,11 +115,11 @@ def plot_bode(
 
     fig, (ax_mag, ax_phase) = plt.subplots(2, 1, sharex=True, figsize=(10, 7))
 
-    ax_mag.semilogx(freqs, mags, marker="o", linestyle="-", color="tab:blue", label="Sweep")
+    ax_mag.semilogx(freqs, mags, marker="o", linestyle="-", color="tab:blue", label="Actual Response")
     ax_mag.set_ylabel("Magnitude (dB)")
     ax_mag.grid(True, which="both", ls="--", lw=0.5)
 
-    ax_phase.semilogx(freqs, phases, marker="o", linestyle="-", color="tab:orange", label="Sweep")
+    ax_phase.semilogx(freqs, phases, marker="o", linestyle="-", color="tab:orange", label="Actual Response")
     ax_phase.set_ylabel("Phase (deg)")
     ax_phase.set_xlabel("Frequency (Hz)")
     ax_phase.grid(True, which="both", ls="--", lw=0.5)
