@@ -18,6 +18,7 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
+#include "adc.h"
 #include "dac.h"
 #include "hrtim.h"
 #include "gpio.h"
@@ -114,6 +115,7 @@ int main(void)
   MX_HRTIM1_Init();
   MX_DAC1_Init();
   MX_DAC2_Init();
+  MX_ADC2_Init();
   /* USER CODE BEGIN 2 */
   compensator_2P2Z_Init(&comp2p2z_iloop, 0.0f, A1_I, A2_I, B0_I, B1_I, B2_I, 1);
   compensator_2P2Z_Init(&comp2p2z_vloop, 0.0f, A1_V, A2_V, B0_V, B1_V, B2_V, 1);
@@ -128,6 +130,15 @@ int main(void)
 #if TOGGLE_SWEEP_ILOOP_FS_100KHZ
   HAL_HRTIM_WaveformCountStart_IT(&hhrtim1, HRTIM_TIMERID_TIMER_A);
   HAL_HRTIM_WaveformOutputStart(&hhrtim1, HRTIM_OUTPUT_TA1|HRTIM_OUTPUT_TA2);	// For Debugging Purposes
+#endif
+
+#if TOGGLE_SWEEP_IPLANT_FS_100KHZ
+  HAL_ADCEx_Calibration_Start(&hadc2, ADC_SINGLE_ENDED);
+  HAL_ADC_Start_IT(&hadc2);
+
+  HAL_HRTIM_WaveformCountStart_IT(&hhrtim1, HRTIM_TIMERID_TIMER_A);
+  HAL_HRTIM_WaveformOutputStart(&hhrtim1, HRTIM_OUTPUT_TA1);	// For Boost PWM
+
 #endif
 
 #if TOGGLE_SWEEP_VLOOP_FS_6KHZ
@@ -258,8 +269,43 @@ void SystemClock_Config(void)
 }
 
 /* USER CODE BEGIN 4 */
+
+#if TOGGLE_SWEEP_IPLANT_FS_100KHZ
+void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef *hadc)
+{
+	if(hadc->Instance == ADC2)
+	{
+		HAL_GPIO_WritePin(GPIOC, GPIO_PIN_7, GPIO_PIN_SET);
+
+		HAL_GPIO_WritePin(GPIOC, GPIO_PIN_7, GPIO_PIN_RESET);
+	}
+}
+#endif
 void HAL_HRTIM_CounterResetCallback(HRTIM_HandleTypeDef * hhrtim, uint32_t TimerIdx)
 {
+#if TOGGLE_SWEEP_IPLANT_FS_100KHZ
+	// Current Loop for Plant Sweep
+	if(HRTIM_TIMERINDEX_TIMER_A == TimerIdx)
+	{
+
+		SFRA_Run();
+
+		// Create Sine Wave
+		// LUT index (top 13 bits)
+		g_sfra.index = g_sfra.phase_acc >> DDS_LUT_SHIFT;
+		g_sfra.phase_acc += g_sfra.phase_inc;
+
+		// Create the Injected Signal Sine Wave
+		g_sfra.sine_out = g_sfra.amplitude * g_sfra.sine_lut[g_sfra.index];						// Generated sine, injected to 2p2z
+		g_sfra.cosine_out = g_sfra.amplitude * g_sfra.sine_lut[(g_sfra.index + 2048) & 0x1FFF];	// Generated for testing only, not to be processed
+
+		// Create a reference signal sine and cosine
+		g_sfra.sine_ref = g_sfra.sine_lut[g_sfra.index];
+		g_sfra.cosine_ref = g_sfra.sine_lut[(g_sfra.index + 2048) & 0x1FFF];
+
+	}
+#endif
+
 #if TOGGLE_SWEEP_ILOOP_FS_100KHZ
 	// Current Loop 100kHz
 	if(HRTIM_TIMERINDEX_TIMER_A == TimerIdx)

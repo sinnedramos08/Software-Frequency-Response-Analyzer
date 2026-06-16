@@ -1,3 +1,4 @@
+"./Core/Src/adc.o"
 "./Core/Src/compensator.o"
 "./Core/Src/dac.o"
 "./Core/Src/gpio.o"
@@ -12,6 +13,8 @@
 "./Core/Startup/startup_stm32g474retx.o"
 "./Drivers/BSP/STM32G4xx_Nucleo/stm32g4xx_nucleo.o"
 "./Drivers/STM32G4xx_HAL_Driver/Src/stm32g4xx_hal.o"
+"./Drivers/STM32G4xx_HAL_Driver/Src/stm32g4xx_hal_adc.o"
+"./Drivers/STM32G4xx_HAL_Driver/Src/stm32g4xx_hal_adc_ex.o"
 "./Drivers/STM32G4xx_HAL_Driver/Src/stm32g4xx_hal_cortex.o"
 "./Drivers/STM32G4xx_HAL_Driver/Src/stm32g4xx_hal_dac.o"
 "./Drivers/STM32G4xx_HAL_Driver/Src/stm32g4xx_hal_dac_ex.o"
@@ -31,3 +34,4 @@
 "./Drivers/STM32G4xx_HAL_Driver/Src/stm32g4xx_hal_uart_ex.o"
 "./Drivers/STM32G4xx_HAL_Driver/Src/stm32g4xx_hal_usart.o"
 "./Drivers/STM32G4xx_HAL_Driver/Src/stm32g4xx_hal_usart_ex.o"
+"./Drivers/STM32G4xx_HAL_Driver/Src/stm32g4xx_ll_adc.o"
