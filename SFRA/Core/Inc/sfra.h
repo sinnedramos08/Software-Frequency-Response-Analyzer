@@ -99,6 +99,7 @@ typedef struct
     /* FSM */
 
     sfra_state_t state; // States for FSM
+
     /* Sweep */
     uint16_t freq_index; 	// Frequency table index
     uint16_t num_freqs;		// Number of frequencies to sweep. When freq_index>=num_freqs, then done sweep
@@ -131,6 +132,9 @@ typedef struct
 
     uint32_t measure_counter;
     uint32_t measure_samples;		// Samples = #cycles * (Fsampling/current_freq)
+
+    /* Current Measurement */
+    uint32_t u32_isense_ave_adc;
 
     /* Results */
 

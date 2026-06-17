@@ -134,7 +134,8 @@ int main(void)
 
 #if TOGGLE_SWEEP_IPLANT_FS_100KHZ
   HAL_ADCEx_Calibration_Start(&hadc2, ADC_SINGLE_ENDED);
-  HAL_ADC_Start_IT(&hadc2);
+
+  HAL_ADCEx_InjectedStart_IT(&hadc2);
 
   HAL_HRTIM_WaveformCountStart_IT(&hhrtim1, HRTIM_TIMERID_TIMER_A);
   HAL_HRTIM_WaveformOutputStart(&hhrtim1, HRTIM_OUTPUT_TA1);	// For Boost PWM
@@ -271,22 +272,27 @@ void SystemClock_Config(void)
 /* USER CODE BEGIN 4 */
 
 #if TOGGLE_SWEEP_IPLANT_FS_100KHZ
-void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef *hadc)
+void HAL_ADCEx_InjectedConvCpltCallback(ADC_HandleTypeDef *hadc)
 {
-	if(hadc->Instance == ADC2)
-	{
-		HAL_GPIO_WritePin(GPIOC, GPIO_PIN_7, GPIO_PIN_SET);
 
-		HAL_GPIO_WritePin(GPIOC, GPIO_PIN_7, GPIO_PIN_RESET);
-	}
+	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_7, GPIO_PIN_SET);
+	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_7, GPIO_PIN_RESET);
+
 }
+
+
 #endif
+#if 0
 void HAL_HRTIM_CounterResetCallback(HRTIM_HandleTypeDef * hhrtim, uint32_t TimerIdx)
 {
+
 #if TOGGLE_SWEEP_IPLANT_FS_100KHZ
 	// Current Loop for Plant Sweep
 	if(HRTIM_TIMERINDEX_TIMER_A == TimerIdx)
 	{
+
+		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_9, GPIO_PIN_SET);
+		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_9, GPIO_PIN_RESET);
 
 		SFRA_Run();
 
@@ -303,6 +309,7 @@ void HAL_HRTIM_CounterResetCallback(HRTIM_HandleTypeDef * hhrtim, uint32_t Timer
 		g_sfra.sine_ref = g_sfra.sine_lut[g_sfra.index];
 		g_sfra.cosine_ref = g_sfra.sine_lut[(g_sfra.index + 2048) & 0x1FFF];
 
+#endif
 	}
 #endif
 
@@ -396,8 +403,10 @@ void HAL_HRTIM_CounterResetCallback(HRTIM_HandleTypeDef * hhrtim, uint32_t Timer
 		HAL_GPIO_WritePin(GPIOC, GPIO_PIN_7, GPIO_PIN_RESET);
 
 	}
-#endif
+
 }
+#endif
+
 
 /* USER CODE END 4 */
 
