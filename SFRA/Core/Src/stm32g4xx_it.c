@@ -205,11 +205,11 @@ void SysTick_Handler(void)
 void ADC1_2_IRQHandler(void)
 {
   /* USER CODE BEGIN ADC1_2_IRQn 0 */
-
+		GPIOA->BSRR = GPIO_PIN_9;
   /* USER CODE END ADC1_2_IRQn 0 */
   HAL_ADC_IRQHandler(&hadc2);
   /* USER CODE BEGIN ADC1_2_IRQn 1 */
-
+	  	  GPIOA->BRR = GPIO_PIN_9;
   /* USER CODE END ADC1_2_IRQn 1 */
 }
 

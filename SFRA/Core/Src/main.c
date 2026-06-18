@@ -271,14 +271,17 @@ void SystemClock_Config(void)
 
 /* USER CODE BEGIN 4 */
 
-#if TOGGLE_SWEEP_IPLANT_FS_100KHZ
+#if 1
 void HAL_ADCEx_InjectedConvCpltCallback(ADC_HandleTypeDef *hadc)
 {
-
-	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_7, GPIO_PIN_SET);
-	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_7, GPIO_PIN_RESET);
+	GPIOC->BSRR = GPIO_PIN_7;
+	g_sfra.u32_isense_ave_adc = HAL_ADCEx_InjectedGetValue(hadc, ADC_INJECTED_RANK_1);
+	GPIOC->BRR = GPIO_PIN_7;
 
 }
+#endif
+
+#if TOGGLE_SWEEP_IPLANT_FS_100KHZ
 
 
 #endif
