@@ -285,12 +285,12 @@ void HAL_HRTIM_CounterResetCallback(HRTIM_HandleTypeDef * hhrtim, uint32_t Timer
 #if 0
 		SFRA_Run();
 #else
-		float frequency_injected = 300.0f;
+		float frequency_injected = 1000.0f;
 	    g_sfra.phase_inc =(uint32_t)(frequency_injected * DDS_FULL_SCALE/ FLOAT_SFRA_FS_HZ); // DDS_FULL_SCALE = 2^32, FLOAT_SFRA_FS_HZ = Sampling Frequency
 #endif
 
 	    // Set the DC Operating Point
-		g_sfra.u32_duty_dc_op_count = 13600;
+		g_sfra.u32_duty_dc_op_count = 33700;
 
 		// Create Sine Wave
 		// LUT index (top 13 bits)
@@ -312,8 +312,6 @@ void HAL_HRTIM_CounterResetCallback(HRTIM_HandleTypeDef * hhrtim, uint32_t Timer
 		// Set the HRTIM Compare: DC OP + Perturbation (injected Sine)
 		__HAL_HRTIM_SETCOMPARE(&hhrtim1,HRTIM_TIMERINDEX_TIMER_A, HRTIM_COMPAREUNIT_1, g_sfra.u32_pwm_duty_count);	// PWM Duty
 		__HAL_HRTIM_SETCOMPARE(&hhrtim1,HRTIM_TIMERINDEX_TIMER_A, HRTIM_COMPAREUNIT_2, g_sfra.u32_pwm_duty_count>>2); // Take half of the duty to get average current
-
-
 
 	}
 #endif
