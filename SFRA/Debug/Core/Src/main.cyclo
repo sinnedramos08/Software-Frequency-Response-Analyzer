@@ -2,4 +2,4 @@
 ../Core/Src/main.c:226:6:SystemClock_Config	3
 ../Core/Src/main.c:270:6:HAL_ADCEx_InjectedConvCpltCallback	1
 ../Core/Src/main.c:278:6:HAL_HRTIM_CounterResetCallback	2
-../Core/Src/main.c:408:6:Error_Handler	1
+../Core/Src/main.c:412:6:Error_Handler	1

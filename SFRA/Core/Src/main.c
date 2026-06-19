@@ -282,8 +282,12 @@ void HAL_HRTIM_CounterResetCallback(HRTIM_HandleTypeDef * hhrtim, uint32_t Timer
 	// Current Loop for Plant Sweep
 	if(HRTIM_TIMERINDEX_TIMER_A == TimerIdx)
 	{
+#if 1
 		SFRA_Run();
-
+#else
+		float frequency_injected = 100.0f;
+	    g_sfra.phase_inc =(uint32_t)(frequency_injected * DDS_FULL_SCALE/ FLOAT_SFRA_FS_HZ);
+#endif
 		// Create Sine Wave
 		// LUT index (top 13 bits)
 		g_sfra.index = g_sfra.phase_acc >> DDS_LUT_SHIFT;
@@ -298,8 +302,8 @@ void HAL_HRTIM_CounterResetCallback(HRTIM_HandleTypeDef * hhrtim, uint32_t Timer
 		g_sfra.cosine_ref = g_sfra.sine_lut[(g_sfra.index + 2048) & 0x1FFF];
 
 		// Set the HRTIM Compare: DC OP + Perturbation (injected Sine)
-		__HAL_HRTIM_SETCOMPARE( &hhrtim1,HRTIM_TIMERINDEX_TIMER_A, HRTIM_COMPAREUNIT_1, (13600+g_sfra.sine_out));
-		__HAL_HRTIM_SETCOMPARE( &hhrtim1,HRTIM_TIMERINDEX_TIMER_A, HRTIM_COMPAREUNIT_2, (13600+g_sfra.sine_out));
+		__HAL_HRTIM_SETCOMPARE(&hhrtim1,HRTIM_TIMERINDEX_TIMER_A, HRTIM_COMPAREUNIT_1, (13600+g_sfra.sine_out));
+		__HAL_HRTIM_SETCOMPARE(&hhrtim1,HRTIM_TIMERINDEX_TIMER_A, HRTIM_COMPAREUNIT_2, (13600+g_sfra.sine_out));
 
 
 
