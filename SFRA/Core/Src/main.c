@@ -134,7 +134,6 @@ int main(void)
 
 #if TOGGLE_SWEEP_IPLANT_FS_100KHZ
   HAL_ADCEx_Calibration_Start(&hadc2, ADC_SINGLE_ENDED);
-
   HAL_ADCEx_InjectedStart_IT(&hadc2);
 
   HAL_HRTIM_WaveformCountStart_IT(&hhrtim1, HRTIM_TIMERID_TIMER_A);
@@ -184,9 +183,6 @@ int main(void)
 
 		printf("frequency,magnitude_db,phase_deg\r\n");
 	}
-
-
-
 
 	if(g_sfra.b_result_ready_flag)
 	{
@@ -270,22 +266,15 @@ void SystemClock_Config(void)
 }
 
 /* USER CODE BEGIN 4 */
-
-#if 1
+#if TOGGLE_SWEEP_IPLANT_FS_100KHZ
 void HAL_ADCEx_InjectedConvCpltCallback(ADC_HandleTypeDef *hadc)
 {
-	GPIOC->BSRR = GPIO_PIN_7;
 	g_sfra.u32_isense_ave_adc = HAL_ADCEx_InjectedGetValue(hadc, ADC_INJECTED_RANK_1);
-	GPIOC->BRR = GPIO_PIN_7;
+
 
 }
 #endif
 
-#if TOGGLE_SWEEP_IPLANT_FS_100KHZ
-
-
-#endif
-#if 0
 void HAL_HRTIM_CounterResetCallback(HRTIM_HandleTypeDef * hhrtim, uint32_t TimerIdx)
 {
 
@@ -293,10 +282,6 @@ void HAL_HRTIM_CounterResetCallback(HRTIM_HandleTypeDef * hhrtim, uint32_t Timer
 	// Current Loop for Plant Sweep
 	if(HRTIM_TIMERINDEX_TIMER_A == TimerIdx)
 	{
-
-		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_9, GPIO_PIN_SET);
-		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_9, GPIO_PIN_RESET);
-
 		SFRA_Run();
 
 		// Create Sine Wave
@@ -312,7 +297,12 @@ void HAL_HRTIM_CounterResetCallback(HRTIM_HandleTypeDef * hhrtim, uint32_t Timer
 		g_sfra.sine_ref = g_sfra.sine_lut[g_sfra.index];
 		g_sfra.cosine_ref = g_sfra.sine_lut[(g_sfra.index + 2048) & 0x1FFF];
 
-#endif
+		// Set the HRTIM Compare: DC OP + Perturbation (injected Sine)
+		__HAL_HRTIM_SETCOMPARE( &hhrtim1,HRTIM_TIMERINDEX_TIMER_A, HRTIM_COMPAREUNIT_1, (13600+g_sfra.sine_out));
+		__HAL_HRTIM_SETCOMPARE( &hhrtim1,HRTIM_TIMERINDEX_TIMER_A, HRTIM_COMPAREUNIT_2, (13600+g_sfra.sine_out));
+
+
+
 	}
 #endif
 
@@ -362,6 +352,7 @@ void HAL_HRTIM_CounterResetCallback(HRTIM_HandleTypeDef * hhrtim, uint32_t Timer
 
 	}
 #endif
+
 #if TOGGLE_SWEEP_VLOOP_FS_6KHZ
 	// Voltage Loop 6kHz
 	if(HRTIM_TIMERINDEX_TIMER_D == TimerIdx)
@@ -404,12 +395,9 @@ void HAL_HRTIM_CounterResetCallback(HRTIM_HandleTypeDef * hhrtim, uint32_t Timer
 		HAL_DAC_SetValue(&hdac2, DAC_CHANNEL_1, DAC_ALIGN_12B_R,(uint16_t)(comp2p2z_vloop.f_out+2048.0f));
 		//HAL_DAC_SetValue(&hdac2, DAC_CHANNEL_1, DAC_ALIGN_12B_R,(uint16_t)(g_sfra.cosine_out+2048.0f));
 		HAL_GPIO_WritePin(GPIOC, GPIO_PIN_7, GPIO_PIN_RESET);
-
 	}
-
-}
 #endif
-
+}
 
 /* USER CODE END 4 */
 
