@@ -48,9 +48,8 @@
 #define STRING_MESSAGE_SWEEP_NAME			"IPLANT 100KHZ"
 
 #define FLOAT_V_TO_ADC(voltage) 			((float)(voltage) * 4095.0f / 3.3f)
-#define SINE_INJECTED_AMPLITUDE_VOLTS		(0.75f)	// Amplitude of Injected Signal in Volts (0.5V to 1V)
-#define SINE_INJECTED_AMPLITUDE_ADC			FLOAT_V_TO_ADC(SINE_INJECTED_AMPLITUDE_VOLTS)
-
+//#define SINE_INJECTED_AMPLITUDE_VOLTS		(0.75f)	// Amplitude of Injected Signal in Volts (0.5V to 1V)
+#define FLOAT_SINE_INJECTED_AMPLITUDE_PERCENT		(0.03f) // Percent of injected sine wave amplitude from DC OP
 #define FREQ_POINTS_PER_DECADE				(10U) // Can only Vary from 10 to 50 Points Per Decade
 
 #endif
@@ -135,6 +134,8 @@ typedef struct
 
     /* Current Measurement */
     uint32_t u32_isense_ave_adc;
+    uint32_t u32_duty_dc_op_count;
+    uint32_t u32_pwm_duty_count;
 
     /* Results */
 

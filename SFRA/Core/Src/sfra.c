@@ -23,6 +23,13 @@ void LUT_Init(void)
     	g_sfra.sine_lut[i] = sinf(2.0f * PI_F * ((float)i / (float)DDS_LUT_SIZE));
     }
 
+    /*
+     for(uint32_t i = 0; i < 8192; i++)
+	{
+    	sine_lut[i] = sinf(2.0f * PI_F * i / 8192.0f);
+    }
+     */
+
 }
 
 void SFRA_Run(void)
@@ -198,7 +205,10 @@ void SFRA_Init(void)
     SFRA_GenerateFrequencyTable();
 
     // Initialize Control Variables
+#if TOGGLE_SWEEP_IPLANT_FS_100KHZ
+#else
     g_sfra.amplitude = SINE_INJECTED_AMPLITUDE_ADC;	// For 1V Amplitude Signal in Oscilloscope
+#endif
     g_sfra.state = SFRA_STATE_INIT;
     g_sfra.b_result_ready_flag=false;
 

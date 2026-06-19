@@ -282,28 +282,36 @@ void HAL_HRTIM_CounterResetCallback(HRTIM_HandleTypeDef * hhrtim, uint32_t Timer
 	// Current Loop for Plant Sweep
 	if(HRTIM_TIMERINDEX_TIMER_A == TimerIdx)
 	{
-#if 1
+#if 0
 		SFRA_Run();
 #else
-		float frequency_injected = 100.0f;
-	    g_sfra.phase_inc =(uint32_t)(frequency_injected * DDS_FULL_SCALE/ FLOAT_SFRA_FS_HZ);
+		float frequency_injected = 300.0f;
+	    g_sfra.phase_inc =(uint32_t)(frequency_injected * DDS_FULL_SCALE/ FLOAT_SFRA_FS_HZ); // DDS_FULL_SCALE = 2^32, FLOAT_SFRA_FS_HZ = Sampling Frequency
 #endif
+
+	    // Set the DC Operating Point
+		g_sfra.u32_duty_dc_op_count = 13600;
+
 		// Create Sine Wave
 		// LUT index (top 13 bits)
 		g_sfra.index = g_sfra.phase_acc >> DDS_LUT_SHIFT;
 		g_sfra.phase_acc += g_sfra.phase_inc;
 
 		// Create the Injected Signal Sine Wave
-		g_sfra.sine_out = g_sfra.amplitude * g_sfra.sine_lut[g_sfra.index];						// Generated sine, injected to 2p2z
-		g_sfra.cosine_out = g_sfra.amplitude * g_sfra.sine_lut[(g_sfra.index + 2048) & 0x1FFF];	// Generated for testing only, not to be processed
+		g_sfra.sine_out = (FLOAT_SINE_INJECTED_AMPLITUDE_PERCENT*(float)(g_sfra.u32_duty_dc_op_count)) * g_sfra.sine_lut[g_sfra.index];// Generated sine
+		g_sfra.cosine_out =(FLOAT_SINE_INJECTED_AMPLITUDE_PERCENT*(float)(g_sfra.u32_duty_dc_op_count)) * g_sfra.sine_lut[(g_sfra.index + 2048) & 0x1FFF];	// Generated for testing only
 
 		// Create a reference signal sine and cosine
 		g_sfra.sine_ref = g_sfra.sine_lut[g_sfra.index];
 		g_sfra.cosine_ref = g_sfra.sine_lut[(g_sfra.index + 2048) & 0x1FFF];
 
+		// Create the DC Operating Operating Point
+
+		g_sfra.u32_pwm_duty_count = g_sfra.u32_duty_dc_op_count + g_sfra.sine_out;
+
 		// Set the HRTIM Compare: DC OP + Perturbation (injected Sine)
-		__HAL_HRTIM_SETCOMPARE(&hhrtim1,HRTIM_TIMERINDEX_TIMER_A, HRTIM_COMPAREUNIT_1, (13600+g_sfra.sine_out));
-		__HAL_HRTIM_SETCOMPARE(&hhrtim1,HRTIM_TIMERINDEX_TIMER_A, HRTIM_COMPAREUNIT_2, (13600+g_sfra.sine_out));
+		__HAL_HRTIM_SETCOMPARE(&hhrtim1,HRTIM_TIMERINDEX_TIMER_A, HRTIM_COMPAREUNIT_1, g_sfra.u32_pwm_duty_count);	// PWM Duty
+		__HAL_HRTIM_SETCOMPARE(&hhrtim1,HRTIM_TIMERINDEX_TIMER_A, HRTIM_COMPAREUNIT_2, g_sfra.u32_pwm_duty_count>>2); // Take half of the duty to get average current
 
 
 
