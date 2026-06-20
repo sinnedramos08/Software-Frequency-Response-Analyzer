@@ -135,9 +135,11 @@ int main(void)
 #if TOGGLE_SWEEP_IPLANT_FS_100KHZ
   HAL_ADCEx_Calibration_Start(&hadc2, ADC_SINGLE_ENDED);
   HAL_ADCEx_InjectedStart_IT(&hadc2);
+  HAL_GPIO_WritePin(RELAY_GPIO_GPIO_Port, RELAY_GPIO_Pin, GPIO_PIN_SET);
 
   HAL_HRTIM_WaveformCountStart_IT(&hhrtim1, HRTIM_TIMERID_TIMER_A);
   HAL_HRTIM_WaveformOutputStart(&hhrtim1, HRTIM_OUTPUT_TA1);	// For Boost PWM
+
 
 #endif
 
@@ -285,12 +287,12 @@ void HAL_HRTIM_CounterResetCallback(HRTIM_HandleTypeDef * hhrtim, uint32_t Timer
 #if 0
 		SFRA_Run();
 #else
-		float frequency_injected = 1000.0f;
+		float frequency_injected = 10000.0f;
 	    g_sfra.phase_inc =(uint32_t)(frequency_injected * DDS_FULL_SCALE/ FLOAT_SFRA_FS_HZ); // DDS_FULL_SCALE = 2^32, FLOAT_SFRA_FS_HZ = Sampling Frequency
 #endif
 
 	    // Set the DC Operating Point
-		g_sfra.u32_duty_dc_op_count = 33700;
+		g_sfra.u32_duty_dc_op_count = 27200;
 
 		// Create Sine Wave
 		// LUT index (top 13 bits)
