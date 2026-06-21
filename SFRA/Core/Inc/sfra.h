@@ -42,15 +42,14 @@
 #define FREQ_POINTS_PER_DECADE				(50U) // Can only Vary from 10 to 50 Points Per Decade
 
 #elif TOGGLE_SWEEP_IPLANT_FS_100KHZ
-#define FLOAT_SFRA_FS_HZ                 	(100000.0f)
-#define SFRA_SETTLING_CYCLES       			(50U)	// Number of cycles to be waited before it settles
-#define SFRA_MEASUREMENT_CYCLES    			(50U)	// Number of Cycles to be calculated
-#define STRING_MESSAGE_SWEEP_NAME			"IPLANT 100KHZ"
+#define FLOAT_SFRA_FS_HZ                 			(100000.0f)
+#define SFRA_SETTLING_CYCLES       					(50U)	// Number of cycles to be waited before it settles
+#define SFRA_MEASUREMENT_CYCLES    					(50U)	// Number of Cycles to be calculated
+#define STRING_MESSAGE_SWEEP_NAME					"IPLANT 100KHZ"
 
-#define FLOAT_V_TO_ADC(voltage) 			((float)(voltage) * 4095.0f / 3.3f)
-//#define SINE_INJECTED_AMPLITUDE_VOLTS		(0.75f)	// Amplitude of Injected Signal in Volts (0.5V to 1V)
+#define FLOAT_V_TO_ADC(voltage) 					((float)(voltage) * 4095.0f / 3.3f)
 #define FLOAT_SINE_INJECTED_AMPLITUDE_PERCENT		(0.01f) // Percent of injected sine wave amplitude from DC OP
-#define FREQ_POINTS_PER_DECADE				(10U) // Can only Vary from 10 to 50 Points Per Decade
+#define FREQ_POINTS_PER_DECADE						(10U) // Can only Vary from 10 to 50 Points Per Decade
 
 #endif
 
@@ -59,7 +58,6 @@
 
 
 // For defining the frequencies in sweep
-
 #if TOGGLE_SWEEP_ILOOP_FS_100KHZ
 #define FREQ_START_HZ						(10U)
 #define	FREQ_STOP_HZ						(40000U)	// Considered Nyquist Frequency: Fsampling>2Fsampled
@@ -70,6 +68,7 @@
 #define FREQ_START_HZ						(10U)
 #define	FREQ_STOP_HZ						(30000U)	// Considered Nyquist Frequency: Fsampling>2Fsampled
 #endif
+
 #define SFRA_FREQ_BUFFER_MAX_POINTS(points)       	((4U * points) + 5U)	// (4 Decades*Points per Decade) + Margin
 
 
@@ -83,6 +82,9 @@
 
 typedef enum
 {
+#if TOGGLE_SWEEP_IPLANT_FS_100KHZ
+
+#elif TOGGLE_SWEEP_ILOOP_FS_100KHZ || TOGGLE_SWEEP_VLOOP_FS_6KHZ
     SFRA_STATE_INIT = 0,
     SFRA_STATE_SETTLING,
     SFRA_STATE_MEASURING,
@@ -90,7 +92,7 @@ typedef enum
     SFRA_STATE_NEXT_FREQ,
     SFRA_STATE_DONE,
 	SFRA_STATE_STOP
-
+#endif
 } sfra_state_t;
 
 typedef struct
@@ -132,10 +134,11 @@ typedef struct
     uint32_t measure_counter;
     uint32_t measure_samples;		// Samples = #cycles * (Fsampling/current_freq)
 
-    /* Current Measurement */
+    /* Current and VOUT Measurement */
     uint32_t u32_isense_ave_adc;
     uint32_t u32_duty_dc_op_count;
     uint32_t u32_pwm_duty_count;
+    uint32_t u32_vout_adc;
 
     /* Results */
 

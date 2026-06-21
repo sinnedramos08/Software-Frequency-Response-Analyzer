@@ -175,20 +175,23 @@ int main(void)
 		g_sfra.b_start_flag = false;
 		printf("\r\nStarting Frequency Sweep: %s\r\n", STRING_MESSAGE_SWEEP_NAME);
 		printf("Operating Condition: %s\r\n", STRING_OPERATION);
-#if TOGGLE_SWEEP_ILOOP_FS_100KHZ
+#if TOGGLE_SWEEP_IPLANT_FS_100KHZ
+
+#elif TOGGLE_SWEEP_ILOOP_FS_100KHZ
 		printf("ILOOP Parameters: %s, %s, %s\r\n", STRING_ILOOP_FX, STRING_ILOOP_PM, STRING_ILOOP_GM);
 		printf("ILOOP Coefficients: B0:%f B1:%f B2:%f A1:%f A2:%f\r\n\r\n", B0_I, B1_I, B2_I, A1_I, A2_I);
 #elif TOGGLE_SWEEP_VLOOP_FS_6KHZ
 		printf("VLOOP Parameters: %s, %s, %s\r\n", STRING_VLOOP_FX, STRING_VLOOP_PM, STRING_VLOOP_GM);
 		printf("VLOOP Coefficients: B0:%f B1:%f B2:%f A1:%f A2:%f\r\n\r\n", B0_V, B1_V, B2_V, A1_V, A2_V);
 #endif
-
 		printf("frequency,magnitude_db,phase_deg\r\n");
 	}
 
 	if(g_sfra.b_result_ready_flag)
 	{
-#if TOGGLE_SWEEP_ILOOP_FS_100KHZ
+#if TOGGLE_SWEEP_IPLANT_FS_100KHZ
+
+#elif TOGGLE_SWEEP_ILOOP_FS_100KHZ
 		g_sfra.b_result_ready_flag = false;
 		printf("%f,%f,%f\r\n", g_sfra.freq_table[g_sfra.freq_index-1], g_sfra.gain_db[g_sfra.freq_index-1], g_sfra.phase_deg[g_sfra.freq_index-1]);
 #elif TOGGLE_SWEEP_VLOOP_FS_6KHZ
@@ -206,7 +209,8 @@ int main(void)
 
 
 
-	if(g_sfra.b_end_flag){
+	if(g_sfra.b_end_flag)
+	{
 		g_sfra.b_end_flag = false;
 		printf("%f,%f,%f\r\n", g_sfra.freq_table[g_sfra.freq_index-1], g_sfra.gain_db[g_sfra.freq_index-1], g_sfra.phase_deg[g_sfra.freq_index-1]);
 	    printf("\r\nElapsed Time: %.2f sec\r\n", g_sfra.elapsed_time_ms / 1000.0f);
@@ -272,6 +276,7 @@ void SystemClock_Config(void)
 void HAL_ADCEx_InjectedConvCpltCallback(ADC_HandleTypeDef *hadc)
 {
 	g_sfra.u32_isense_ave_adc = HAL_ADCEx_InjectedGetValue(hadc, ADC_INJECTED_RANK_1);
+	g_sfra.u32_vout_adc = HAL_ADCEx_InjectedGetValue(hadc, ADC_INJECTED_RANK_2);
 
 
 }

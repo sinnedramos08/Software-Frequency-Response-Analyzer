@@ -36,6 +36,9 @@ void SFRA_Run(void)
 {
     switch(g_sfra.state)
     {
+#if TOGGLE_SWEEP_IPLANT_FS_100KHZ
+
+#elif TOGGLE_SWEEP_ILOOP_FS_100KHZ || TOGGLE_SWEEP_VLOOP_FS_6KHZ
 		case SFRA_STATE_INIT:
 
 			g_sfra.start_time_ms = HAL_GetTick();
@@ -122,6 +125,7 @@ void SFRA_Run(void)
         default:
             break;
     }
+#endif
 }
 
 
@@ -206,6 +210,7 @@ void SFRA_Init(void)
 
     // Initialize Control Variables
 #if TOGGLE_SWEEP_IPLANT_FS_100KHZ
+
 #else
     g_sfra.amplitude = SINE_INJECTED_AMPLITUDE_ADC;	// For 1V Amplitude Signal in Oscilloscope
 #endif
