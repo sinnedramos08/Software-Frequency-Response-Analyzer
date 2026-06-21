@@ -22,15 +22,51 @@ void LUT_Init(void)
     for(int i = 0; i < DDS_LUT_SIZE; i++){
     	g_sfra.sine_lut[i] = sinf(2.0f * PI_F * ((float)i / (float)DDS_LUT_SIZE));
     }
+}
 
-#if 0
-     for(uint32_t i = 0; i < 8192; i++)
-	{
-    	sine_lut[i] = sinf(2.0f * PI_F * i / 8192.0f);
-    }
+void SFRA_Init(void)
+{
+    memset(&g_sfra, 0, sizeof(g_sfra));
+#if TOGGLE_SWEEP_IPLANT_FS_100KHZ
+    SFRA_GenerateFrequencyTable();
+    g_sfra.state = SFRA_STATE_PERIPH_INIT;
+#else
+    SFRA_GenerateFrequencyTable();
+    g_sfra.amplitude = SINE_INJECTED_AMPLITUDE_ADC;
+    g_sfra.state = SFRA_STATE_INIT;
 #endif
 
+    g_sfra.b_result_ready_flag = false;
+    g_sfra.b_fault_flag        = false;
 }
+
+
+void SFRA_GenerateFrequencyTable(void){
+    // Get number of Decades - ~4 Decades from 10Hz to 40kHz
+    float decades= log10f((float)(FREQ_STOP_HZ)/(float)(FREQ_START_HZ)); // Number of decades = log(40000/10)
+
+    // Get number of frequency based on number of decades and points per decade
+    g_sfra.num_freqs =(uint16_t)(decades * FREQ_POINTS_PER_DECADE) + 1U; // (3.6*10)+1=37 frequencies
+
+    // Using Logarithmic scale, we need to have common ratio (not common difference) between frequency points
+    // Since we need X data points per decade, formula: ratio = 10^(1/x)
+    float ratio = powf(10.0f,1.0f/(float)(FREQ_POINTS_PER_DECADE));
+
+    // Populate the Frequency Buffer
+
+    // First Frequency at index 0 -> Start Frequency
+    g_sfra.freq_table[0] = (float)FREQ_START_HZ;
+
+    // Populate with Geometric Ratio
+    for(uint16_t i = 1U;i < g_sfra.num_freqs;i++){
+    	g_sfra.freq_table[i] = g_sfra.freq_table[i - 1U] * ratio;
+    }
+
+    // Last Frequency at index #frequency-1-> Stop Frequency
+    g_sfra.freq_table[g_sfra.num_freqs - 1U] = (float)FREQ_STOP_HZ;
+
+}
+
 
 void SFRA_UpdateFrequency(float freq)
 {
@@ -46,7 +82,6 @@ void SFRA_UpdateFrequency(float freq)
 
 #if TOGGLE_SWEEP_IPLANT_FS_100KHZ
     /* During DEJECT_WAIT, amplitude is decremented by amplitude_step
-     *
      */
     g_sfra.fade_samples = (uint32_t)((float)SFRA_FADE_CYCLES * FLOAT_SFRA_FS_HZ / freq);
 #endif
@@ -76,49 +111,11 @@ void SFRA_Calculate(void)
 
 }
 
-void SFRA_GenerateFrequencyTable(void){
-    // Get number of Decades - ~4 Decades from 10Hz to 40kHz
-    float decades= log10f((float)(FREQ_STOP_HZ)/(float)(FREQ_START_HZ)); // Number of decades = log(40000/10)
-
-    // Get number of frequency based on number of decades and points per decade
-    g_sfra.num_freqs =(uint16_t)(decades * FREQ_POINTS_PER_DECADE) + 1U; // (3.6*10)+1=37 frequencies
-
-    // Using Logarithmic scale, we need to have common ratio (not common difference) between frequency points
-    // Since we need X data points per decade, formula: ratio = 10^(1/x)
-    float ratio = powf(10.0f,1.0f/(float)(FREQ_POINTS_PER_DECADE));
-
-    // Populate the Frequency Buffer
-
-    // First Frequency at index 0 -> Start Frequency
-    g_sfra.freq_table[0] = (float)FREQ_START_HZ;
-
-    // Populate with Geometric Ratio
-    for(uint16_t i = 1U;i < g_sfra.num_freqs;i++){
-    	g_sfra.freq_table[i] = g_sfra.freq_table[i - 1U] * ratio;
-    }
-
-    // Last Frequency at index #frequency-1-> Stop Frequency
-    g_sfra.freq_table[g_sfra.num_freqs - 1U] = (float)FREQ_STOP_HZ;
-
-}
-
-void SFRA_Init(void)
-{
-    memset(&g_sfra, 0, sizeof(g_sfra));
-#if TOGGLE_SWEEP_IPLANT_FS_100KHZ
-    g_sfra.state = SFRA_STATE_PERIPH_INIT;
-#else
-    SFRA_GenerateFrequencyTable();
-    g_sfra.amplitude = SINE_INJECTED_AMPLITUDE_ADC;
-    g_sfra.state = SFRA_STATE_INIT;
-#endif
-
-    g_sfra.b_result_ready_flag = false;
-    g_sfra.b_fault_flag        = false;
-}
 
 
 
+
+/* For Fault Protection in Plant Mode */
 #if TOGGLE_SWEEP_IPLANT_FS_100KHZ
 void SFRA_Plant_TriggerFault(sfra_fault_t reason)
 {
@@ -161,6 +158,131 @@ void SFRA_Run(void)
     switch(g_sfra.state)
     {
 #if TOGGLE_SWEEP_IPLANT_FS_100KHZ
+    	case SFRA_STATE_PERIPH_INIT:
+    		// Enable Relay Pin
+    	    HAL_GPIO_WritePin(RELAY_GPIO_Port, RELAY_GPIO_Pin, GPIO_PIN_SET);
+    	    g_sfra.start_time_ms  = HAL_GetTick();
+    	    g_sfra.b_start_flag   = true;
+
+
+    	    g_sfra.state = SFRA_STATE_CHECK_SIGNALS;
+    		break;
+    	case SFRA_STATE_CHECK_SIGNALS:
+			bool vout_ok   = (g_sfra.u32_voutsense_adc > VOUT_MIN_ADC);
+			bool isense_ok = (g_sfra.u32_isense_ave_adc > 0U);
+
+			if(vout_ok && isense_ok)
+			{
+				/* Zero the duty counter — we start ramping from 0 */
+				g_sfra.u32_duty_dc_op_count = 0U;
+				g_sfra.u32_pwm_duty_count   = 0U;
+
+	    	    // Enable the PWM
+				HAL_HRTIM_WaveformOutputStart(&hhrtim1, HRTIM_OUTPUT_TA1);
+
+				g_sfra.state = SFRA_STATE_RAMP_UP;
+			}
+			else
+			{
+				/* Fault: ADC signals missing. Do not proceed. */
+				SFRA_Plant_TriggerFault(SFRA_FAULT_NO_SIGNAL);
+			}
+    		break;
+    	case SFRA_STATE_RAMP_UP:
+
+    		// Increment Duty
+    		g_sfra.u32_duty_dc_op_count += PWM_DUTY_INC_TICKS;
+
+    		// Guard: Max Duty
+    	    if(g_sfra.u32_duty_dc_op_count >= PWM_DUTY_MAX_TICKS)
+    	    {
+    	        g_sfra.u32_duty_dc_op_count = PWM_DUTY_MAX_TICKS;
+    	        SFRA_Plant_TriggerFault(SFRA_FAULT_MAX_DUTY_REACHED);
+    	        return;
+    	    }
+
+    		// Check Output Voltage
+    	    if(g_sfra.u32_voutsense_adc >= VOUT_TARGET_ADC)
+    	    {
+    	        // Stop Increment
+    	        g_sfra.vout_verify_acc    = 0ULL;	// Accumulator for averaging
+    	        g_sfra.u32_verify_counter = 0U;
+    	        g_sfra.state = SFRA_STATE_VERIFY_DCOP;
+    	    }
+
+    		break;
+    	case SFRA_STATE_VERIFY_DCOP:
+    		g_sfra.vout_verify_acc += (uint64_t)g_sfra.u32_voutsense_adc;
+    		g_sfra.u32_verify_counter++;
+
+    	    if(g_sfra.u32_verify_counter >= N_VERIFY_SAMPLES)
+    	    {
+
+    	    	// Check Average after accumulating samples
+    	        uint32_t vout_avg = (uint32_t)(g_sfra.vout_verify_acc / (uint64_t)N_VERIFY_SAMPLES);
+
+    	        // Check for the error
+    	        int32_t error = (int32_t)vout_avg - (int32_t)VOUT_TARGET_ADC;
+    	        if(error < 0) error = -error;
+
+
+    	    }
+
+            if((uint32_t)error <= VOUT_TOL_ADC)
+            {
+                // Stable. Latch the duty count as the DC operating point
+                g_sfra.u32_duty_dc_op_latch = g_sfra.u32_duty_dc_op_count;
+                g_sfra.state = SFRA_STATE_SFRA_INIT;
+            }
+            else
+            {
+                /* Not yet stable — go back to ramp, let it adjust */
+                g_sfra.vout_verify_acc    = 0ULL;
+                g_sfra.u32_verify_counter = 0U;
+                g_sfra.state = SFRA_STATE_RAMP_UP;
+            }
+
+    		break;
+    	case SFRA_STATE_SFRA_INIT:
+    		// Set and compute the target amplitude of the perturbation
+    		g_sfra.amplitude = 0.0f;
+    		g_sfra.amplitude_target = FLOAT_SINE_INJECTED_AMPLITUDE_PERCENT * (float)g_sfra.u32_duty_dc_op_latch;
+
+    		// Set for first frequency
+    		g_sfra.freq_index     = 0;
+    	    SFRA_UpdateFrequency(g_sfra.freq_table[0]);
+    	    g_sfra.settle_counter = 0;
+
+
+    	    if(g_sfra.fade_samples > 0U)
+    	    {
+    	        g_sfra.amplitude_step = computed_amplitude / (float)g_sfra.fade_samples;
+    	    }
+
+    	    g_sfra.state = SFRA_STATE_DEJECT_WAIT;
+    		break;
+    	case SFRA_STATE_DEJECT_WAIT:
+    		break;
+    	case SFRA_STATE_SETTLING:
+    		break;
+    	case SFRA_STATE_MEASURING:
+    		break;
+    	case SFRA_STATE_CALCULATE:
+    		break;
+    	case SFRA_STATE_NEXT_FREQ:
+    		break;
+    	case SFRA_STATE_RAMP_DOWN:
+    		break;
+    	case SFRA_STATE_FAULT:
+    		break;
+    	case SFRA_STATE_DONE:
+    		break;
+    	case SFRA_STATE_STOP:
+    		break;
+    	default:
+    		break;
+
+
 
 #elif TOGGLE_SWEEP_ILOOP_FS_100KHZ || TOGGLE_SWEEP_VLOOP_FS_6KHZ
 		case SFRA_STATE_INIT:

@@ -123,7 +123,7 @@
 #define HRTIM_PERIOD_TICKS              (54400U)    /* Must match your HRTIM init */
 #define PWM_DUTY_MAX_PERCENT            (0.90f)
 #define PWM_DUTY_MAX_TICKS              ((uint32_t)(PWM_DUTY_MAX_PERCENT * (float)HRTIM_PERIOD_TICKS))
-#define PWM_DUTY_INC_TICKS              (3U)        /* Tune: ticks increment per ISR */
+#define PWM_DUTY_INC_TICKS              (1U)        /* Tune: ticks increment per ISR */
 #endif
 
 /* ================================================
@@ -175,7 +175,7 @@
 #define VOUT_TARGET_VOLTS               (60.0f)
 #define VOUT_TARGET_ADC                 VOUT_TO_ADC_COUNT(VOUT_TARGET)
 #define VOUT_TOL_ADC                    VOUT_TO_ADC_COUNT(1.0f)
-#define VOUT_NOISE_FLOOR_ADC            VOUT_TO_ADC_COUNT(5.0f)
+#define VOUT_MIN_ADC		            VOUT_TO_ADC_COUNT(5.0f)
 #define VOUT_SAFE_BAND_ADC              VOUT_TO_ADC_COUNT(3.0f)
 #define N_VERIFY_SAMPLES                (5000U)
 #define SFRA_FADE_CYCLES                (5U)
@@ -223,9 +223,6 @@ typedef enum
 typedef enum
 {
 #if TOGGLE_SWEEP_IPLANT_FS_100KHZ
-    /* ---- Shared entry point (compensator path starts here) ---- */
-    SFRA_STATE_INIT         = 0,
-
     /* ---- Plant-only states: live voltage bring-up ---- */
     SFRA_STATE_PERIPH_INIT,         /* Enable relay GPIO, start ADC */
     SFRA_STATE_CHECK_SIGNALS,       /* Verify VOUT + ISENSE ADC are non-zero */
@@ -286,10 +283,10 @@ typedef struct
     float       cosine_ref;     /* cos(theta) at current phase */
 
     /* ---- IQ Accumulators ---- */
-    float       input_I_acc;    /* Σ x[n] * sin_ref[n] */
-    float       input_Q_acc;    /* Σ x[n] * cos_ref[n] */
-    float       output_I_acc;   /* Σ y[n] * sin_ref[n] */
-    float       output_Q_acc;   /* Σ y[n] * cos_ref[n] */
+    float       input_I_acc;
+    float       input_Q_acc;
+    float       output_I_acc;
+    float       output_Q_acc;
 
     /* ---- Timing counters ---- */
     uint32_t    settle_counter;
@@ -303,7 +300,7 @@ typedef struct
 
     /* ---- ADC Readings (written by ISR callbacks) ---- */
     uint32_t    u32_isense_ave_adc;     /* ISENSE ADC — injected at average-current point */
-    uint32_t    u32_vout_adc;           /* VOUT ADC — read each ISR for monitoring */
+    uint32_t    u32_voutsense_adc;           /* VOUT ADC — read each ISR for monitoring */
 
     /* ---- PWM Duty Counts ---- */
     uint32_t    u32_duty_dc_op_count;   /* Current duty during ramp (counts) */
@@ -315,13 +312,6 @@ typedef struct
     uint32_t    u32_verify_counter;
 
     /* ---- ISENSE measurement accumulator ---- */
-    /*
-     * During MEASURING state, we accumulate ISENSE each ISR *before*
-     * doing the IQ multiply. This gives us a per-sample average that
-     * rejects high-frequency ADC noise without adding latency.
-     * The IQ demodulation then acts as a narrow-band filter at the
-     * injection frequency, further rejecting all other noise components.
-     */
     float       isense_for_iq;          /* Per-ISR ISENSE value fed into IQ */
 
 
@@ -338,6 +328,9 @@ typedef struct
     bool    b_end_flag;             /* Set once at sweep end */
     bool    b_result_ready_flag;    /* Set each time a frequency result is ready */
     bool    b_fault_flag;           /* Set on safety trip */
+
+    /* ---- Fault ---- */
+    sfra_fault_t    fault_reason;
 
     /* ---- Elapsed time ---- */
     uint32_t    start_time_ms;

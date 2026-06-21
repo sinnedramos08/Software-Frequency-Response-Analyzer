@@ -146,12 +146,8 @@ int main(void)
 #if TOGGLE_SWEEP_IPLANT_FS_100KHZ
   HAL_ADCEx_Calibration_Start(&hadc2, ADC_SINGLE_ENDED);
   HAL_ADCEx_InjectedStart_IT(&hadc2);
-  HAL_GPIO_WritePin(RELAY_GPIO_GPIO_Port, RELAY_GPIO_Pin, GPIO_PIN_SET);
 
   HAL_HRTIM_WaveformCountStart_IT(&hhrtim1, HRTIM_TIMERID_TIMER_A);
-  HAL_HRTIM_WaveformOutputStart(&hhrtim1, HRTIM_OUTPUT_TA1);	// For Boost PWM
-
-
 #endif
 
 #if TOGGLE_SWEEP_VLOOP_FS_6KHZ
