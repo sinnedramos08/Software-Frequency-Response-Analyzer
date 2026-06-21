@@ -23,14 +23,138 @@ void LUT_Init(void)
     	g_sfra.sine_lut[i] = sinf(2.0f * PI_F * ((float)i / (float)DDS_LUT_SIZE));
     }
 
-    /*
+#if 0
      for(uint32_t i = 0; i < 8192; i++)
 	{
     	sine_lut[i] = sinf(2.0f * PI_F * i / 8192.0f);
     }
-     */
+#endif
 
 }
+
+void SFRA_UpdateFrequency(float freq)
+{
+    g_sfra.current_freq = freq;
+
+    g_sfra.phase_inc =(uint32_t)(freq *DDS_FULL_SCALE/ FLOAT_SFRA_FS_HZ);
+
+    g_sfra.settle_samples = (uint32_t)(SFRA_SETTLING_CYCLES*FLOAT_SFRA_FS_HZ/freq);
+    g_sfra.measure_samples = (uint32_t)(SFRA_MEASUREMENT_CYCLES * FLOAT_SFRA_FS_HZ/ freq);
+
+    g_sfra.phase_acc = 0;
+    g_sfra.index     = 0;
+
+#if TOGGLE_SWEEP_IPLANT_FS_100KHZ
+    /* During DEJECT_WAIT, amplitude is decremented by amplitude_step
+     *
+     */
+    g_sfra.fade_samples = (uint32_t)((float)SFRA_FADE_CYCLES * FLOAT_SFRA_FS_HZ / freq);
+#endif
+}
+
+void SFRA_Calculate(void)
+{
+    float input_mag   = sqrtf(g_sfra.input_I_acc  * g_sfra.input_I_acc  + g_sfra.input_Q_acc  * g_sfra.input_Q_acc);
+    float input_amp   = 2.0f * input_mag / (float)g_sfra.measure_samples;
+    float input_phase = atan2f(g_sfra.input_Q_acc, g_sfra.input_I_acc);
+
+
+    float output_mag   = sqrtf(g_sfra.output_I_acc * g_sfra.output_I_acc + g_sfra.output_Q_acc * g_sfra.output_Q_acc);
+    float output_amp   = 2.0f * output_mag / (float)g_sfra.measure_samples;
+    float output_phase = atan2f(g_sfra.output_Q_acc, g_sfra.output_I_acc);
+
+	float gain = output_amp / input_amp;
+	float gain_db = 20.0f * log10f(gain);
+	float phase_deg = (output_phase - input_phase)*180.0f / PI_F;
+
+
+	g_sfra.gain_db[g_sfra.freq_index] = gain_db;
+	g_sfra.phase_deg[g_sfra.freq_index] = phase_deg;
+
+	g_sfra.b_result_ready_flag=true;
+
+
+}
+
+void SFRA_GenerateFrequencyTable(void){
+    // Get number of Decades - ~4 Decades from 10Hz to 40kHz
+    float decades= log10f((float)(FREQ_STOP_HZ)/(float)(FREQ_START_HZ)); // Number of decades = log(40000/10)
+
+    // Get number of frequency based on number of decades and points per decade
+    g_sfra.num_freqs =(uint16_t)(decades * FREQ_POINTS_PER_DECADE) + 1U; // (3.6*10)+1=37 frequencies
+
+    // Using Logarithmic scale, we need to have common ratio (not common difference) between frequency points
+    // Since we need X data points per decade, formula: ratio = 10^(1/x)
+    float ratio = powf(10.0f,1.0f/(float)(FREQ_POINTS_PER_DECADE));
+
+    // Populate the Frequency Buffer
+
+    // First Frequency at index 0 -> Start Frequency
+    g_sfra.freq_table[0] = (float)FREQ_START_HZ;
+
+    // Populate with Geometric Ratio
+    for(uint16_t i = 1U;i < g_sfra.num_freqs;i++){
+    	g_sfra.freq_table[i] = g_sfra.freq_table[i - 1U] * ratio;
+    }
+
+    // Last Frequency at index #frequency-1-> Stop Frequency
+    g_sfra.freq_table[g_sfra.num_freqs - 1U] = (float)FREQ_STOP_HZ;
+
+}
+
+void SFRA_Init(void)
+{
+    memset(&g_sfra, 0, sizeof(g_sfra));
+#if TOGGLE_SWEEP_IPLANT_FS_100KHZ
+    g_sfra.state = SFRA_STATE_PERIPH_INIT;
+#else
+    SFRA_GenerateFrequencyTable();
+    g_sfra.amplitude = SINE_INJECTED_AMPLITUDE_ADC;
+    g_sfra.state = SFRA_STATE_INIT;
+#endif
+
+    g_sfra.b_result_ready_flag = false;
+    g_sfra.b_fault_flag        = false;
+}
+
+
+
+#if TOGGLE_SWEEP_IPLANT_FS_100KHZ
+void SFRA_Plant_TriggerFault(sfra_fault_t reason)
+{
+    g_sfra.amplitude            = 0.0f;
+    g_sfra.amplitude_target     = 0.0f;
+    g_sfra.amplitude_step       = 0.0f;
+    g_sfra.u32_duty_dc_op_latch = 0U;
+    g_sfra.u32_pwm_duty_count   = 0U;
+    g_sfra.fault_reason         = reason;
+    g_sfra.b_fault_flag         = true;
+    g_sfra.state                = SFRA_STATE_FAULT;
+}
+
+void SFRA_Plant_CheckSafetyWatchdog(void)
+{
+    if(g_sfra.state != SFRA_STATE_SETTLING &&
+       g_sfra.state != SFRA_STATE_MEASURING)
+    {
+        return;  /* Not in an injection state — watchdog inactive */
+    }
+
+    int32_t vout_error = (int32_t)g_sfra.u32_vout_adc - (int32_t)VOUT_TARGET_ADC;
+    if(vout_error < 0) vout_error = -vout_error;  /* abs() */
+
+    if((uint32_t)vout_error > VOUT_SAFE_BAND_ADC)
+    {
+        sfra_fault_t reason = (g_sfra.u32_vout_adc > VOUT_TARGET_ADC) ?
+                               SFRA_FAULT_VOUT_OVERVOLTAGE :
+                               SFRA_FAULT_VOUT_UNDERVOLTAGE;
+        SFRA_Plant_TriggerFault(reason);
+    }
+}
+#endif
+
+
+
 
 void SFRA_Run(void)
 {
@@ -129,121 +253,4 @@ void SFRA_Run(void)
 }
 
 
-void SFRA_Calculate(void)
-{
-	float input_mag;
-	float input_amp;
-	float input_phase;
-	float output_mag;
-	float output_amp;
-	float output_phase;
 
-	input_mag =sqrtf(g_sfra.input_I_acc * g_sfra.input_I_acc +g_sfra.input_Q_acc * g_sfra.input_Q_acc);
-	input_amp =2.0f * input_mag /(float)g_sfra.measure_samples;
-	input_phase =atan2f(g_sfra.input_Q_acc,g_sfra.input_I_acc);
-
-	output_mag =sqrtf(g_sfra.output_I_acc * g_sfra.output_I_acc +g_sfra.output_Q_acc * g_sfra.output_Q_acc);
-	output_amp =2.0f * output_mag /(float)g_sfra.measure_samples;
-	output_phase =atan2f(g_sfra.output_Q_acc,g_sfra.output_I_acc);
-
-	float gain = output_amp / input_amp;
-	float gain_db = 20.0f * log10f(gain);
-	float phase_deg = (output_phase - input_phase)*180.0f / PI_F;
-
-
-	g_sfra.gain_db[g_sfra.freq_index] = gain_db;
-	g_sfra.phase_deg[g_sfra.freq_index] = phase_deg;
-
-	g_sfra.b_result_ready_flag=true;
-
-
-}
-
-void SFRA_UpdateFrequency(float freq)
-{
-    g_sfra.current_freq = freq;
-    g_sfra.phase_inc =(uint32_t)(freq *DDS_FULL_SCALE/ FLOAT_SFRA_FS_HZ);
-    g_sfra.settle_samples = (uint32_t)(SFRA_SETTLING_CYCLES*FLOAT_SFRA_FS_HZ/freq);
-    g_sfra.measure_samples = (uint32_t)(SFRA_MEASUREMENT_CYCLES * FLOAT_SFRA_FS_HZ/ freq);
-    g_sfra.phase_acc = 0;
-    g_sfra.index     = 0;
-}
-void SFRA_Init(void)
-{
-    memset(&g_sfra, 0, sizeof(g_sfra));
-#if 0
-    g_sfra.freq_table[0]  = 50.0f;
-    g_sfra.freq_table[1]  = 63.1f;
-    g_sfra.freq_table[2]  = 79.4f;
-    g_sfra.freq_table[3]  = 100.0f;
-    g_sfra.freq_table[4]  = 126.0f;
-    g_sfra.freq_table[5]  = 158.0f;
-    g_sfra.freq_table[6]  = 200.0f;
-    g_sfra.freq_table[7]  = 251.0f;
-    g_sfra.freq_table[8]  = 316.0f;
-    g_sfra.freq_table[9]  = 398.0f;
-    g_sfra.freq_table[10] = 501.0f;
-    g_sfra.freq_table[11] = 631.0f;
-    g_sfra.freq_table[12] = 794.0f;
-    g_sfra.freq_table[13] = 1000.0f;
-
-    g_sfra.freq_table[14] = 1260.0f;
-    g_sfra.freq_table[15] = 1580.0f;
-    g_sfra.freq_table[16] = 2000.0f;
-    g_sfra.freq_table[17] = 2510.0f;
-    g_sfra.freq_table[18] = 3160.0f;
-    g_sfra.freq_table[19] = 3980.0f;
-    g_sfra.freq_table[20] = 5010.0f;
-    g_sfra.freq_table[21] = 6310.0f;
-    g_sfra.freq_table[22] = 7940.0f;
-    g_sfra.freq_table[23] = 10000.0f;
-
-    g_sfra.freq_table[24] = 12600.0f;
-    g_sfra.freq_table[25] = 15800.0f;
-    g_sfra.freq_table[26] = 20000.0f;
-    g_sfra.freq_table[27] = 25100.0f;
-    g_sfra.freq_table[28] = 31600.0f;
-    g_sfra.freq_table[29] = 39800.0f;
-    g_sfra.num_freqs = 30;
-#endif
-    SFRA_GenerateFrequencyTable();
-
-    // Initialize Control Variables
-#if TOGGLE_SWEEP_IPLANT_FS_100KHZ
-
-#else
-    g_sfra.amplitude = SINE_INJECTED_AMPLITUDE_ADC;	// For 1V Amplitude Signal in Oscilloscope
-#endif
-    g_sfra.state = SFRA_STATE_INIT;
-    g_sfra.b_result_ready_flag=false;
-
-}
-
-void SFRA_GenerateFrequencyTable(void){
-    float decades;
-    float ratio;
-
-    // Get number of Decades - ~4 Decades from 10Hz to 40kHz
-    decades = log10f((float)(FREQ_STOP_HZ)/(float)(FREQ_START_HZ)); // Number of decades = log(40000/10)
-
-    // Get number of frequency based on number of decades and points per decade
-    g_sfra.num_freqs =(uint16_t)(decades * FREQ_POINTS_PER_DECADE) + 1U; // (3.6*10)+1=37 frequencies
-
-    // Using Logarithmic scale, we need to have common ratio (not common difference) between frequency points
-    // Since we need X data points per decade, formula: ratio = 10^(1/x)
-    ratio = powf(10.0f,1.0f/(float)(FREQ_POINTS_PER_DECADE));
-
-    // Populate the Frequency Buffer
-
-    // First Frequency at index 0 -> Start Frequency
-    g_sfra.freq_table[0] = (float)FREQ_START_HZ;
-
-    // Populate with Geometric Ratio
-    for(uint16_t i = 1U;i < g_sfra.num_freqs;i++){
-    	g_sfra.freq_table[i] = g_sfra.freq_table[i - 1U] * ratio;
-    }
-
-    // Last Frequency at index #frequency-1-> Stop Frequency
-    g_sfra.freq_table[g_sfra.num_freqs - 1U] = (float)FREQ_STOP_HZ;
-
-}

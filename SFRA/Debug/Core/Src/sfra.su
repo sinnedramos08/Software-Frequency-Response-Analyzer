@@ -1,6 +1,0 @@
-../Core/Src/sfra.c:19:6:LUT_Init	16	static
-../Core/Src/sfra.c:35:6:SFRA_Run	8	static
-../Core/Src/sfra.c:132:6:SFRA_Calculate	48	static
-../Core/Src/sfra.c:162:6:SFRA_UpdateFrequency	16	static
-../Core/Src/sfra.c:171:6:SFRA_Init	8	static
-../Core/Src/sfra.c:222:6:SFRA_GenerateFrequencyTable	24	static

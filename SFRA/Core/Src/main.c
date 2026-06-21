@@ -40,18 +40,29 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
+
+/* Loop Gains */
 #define KI_LOOP						(float)(1.0f / (G2 * GADC))
 #define GADC						(float)(1240.909091f)		//(1240.909091f)					//(1105)				//1240.909091f	//ADC Gain = 4095/3.3
 #define G2							(float)(0.066f) // (0.250f)				//Hall Sensor Gain = 250mV/A
 #define G3							(float)(0.00298923138f)//(0.002609997838f)//(0.00309512f)		//VIN Gain
 #define G3_RMS						(float)(G3 * 100.0f)
 
+#define VOUT_R1_VALUE				(float)(14316318.0f)		//14.1Meg		//Expected Value
+#define VOUT_R2_VALUE				(float)(115000.0f)
+#define G4							(float)(VOUT_R2_VALUE / (VOUT_R1_VALUE + VOUT_R2_VALUE))
+#define VOUT_TARGET					(60.0f)
+#define VOUT_TO_ADC_VALUE(v)		((uint16_t)((v) * GADC * G4))
+
+/* System Clock, Sampling Frequency, HRTIM Counter */
 #define SWITCHING_FREQ				(100000U)
 #define SYSTEM_CLOCK				(170000000U)
 #define HRTIM_CLOCK					(5440000000U)
 #define FREQ_HZ_TO_PWM_TICKS(f)		(uint16_t)((uint64_t)HRTIM_CLOCK / (uint64_t)f)
 #define HRTIM_PERIOD				FREQ_HZ_TO_PWM_TICKS(SWITCHING_FREQ)
-#define PI_F       (3.14159265359f)
+
+/* Math */
+#define PI_F       					(3.14159265359f)
 
 
 
@@ -129,7 +140,7 @@ int main(void)
 
 #if TOGGLE_SWEEP_ILOOP_FS_100KHZ
   HAL_HRTIM_WaveformCountStart_IT(&hhrtim1, HRTIM_TIMERID_TIMER_A);
-  HAL_HRTIM_WaveformOutputStart(&hhrtim1, HRTIM_OUTPUT_TA1|HRTIM_OUTPUT_TA2);	// For Debugging Purposes
+  //HAL_HRTIM_WaveformOutputStart(&hhrtim1, HRTIM_OUTPUT_TA1|HRTIM_OUTPUT_TA2);	// For Debugging Purposes
 #endif
 
 #if TOGGLE_SWEEP_IPLANT_FS_100KHZ
@@ -145,7 +156,7 @@ int main(void)
 
 #if TOGGLE_SWEEP_VLOOP_FS_6KHZ
   HAL_HRTIM_WaveformCountStart_IT(&hhrtim1, HRTIM_TIMERID_TIMER_D);
-  HAL_HRTIM_WaveformOutputStart(&hhrtim1, HRTIM_OUTPUT_TD1|HRTIM_OUTPUT_TD2);	// For Debugging Purposes
+  //HAL_HRTIM_WaveformOutputStart(&hhrtim1, HRTIM_OUTPUT_TD1|HRTIM_OUTPUT_TD2);	// For Debugging Purposes
 #endif
 
   /* USER CODE END 2 */
@@ -276,7 +287,7 @@ void SystemClock_Config(void)
 void HAL_ADCEx_InjectedConvCpltCallback(ADC_HandleTypeDef *hadc)
 {
 	g_sfra.u32_isense_ave_adc = HAL_ADCEx_InjectedGetValue(hadc, ADC_INJECTED_RANK_1);
-	g_sfra.u32_vout_adc = HAL_ADCEx_InjectedGetValue(hadc, ADC_INJECTED_RANK_2);
+	g_sfra.u32_voutsense_adc = HAL_ADCEx_InjectedGetValue(hadc, ADC_INJECTED_RANK_2);
 
 
 }
