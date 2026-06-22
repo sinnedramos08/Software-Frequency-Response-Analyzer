@@ -14,6 +14,8 @@
 
 extern const sfra_strategy_t compensator_strategy;
 
+
+// Function Prototypes
 void CompensatorStrategy_ISR(void);
 
 #endif /* STRATEGIES_INC_COMPENSATOR_STRATEGY_H_ */

@@ -5,26 +5,23 @@
  *      Author: denni
  */
 
-
-#include "stdio.h"
+// Includes
+#include <stdio.h>
 #include <stdbool.h>
-#include <math.h>
-#include "stm32g4xx_hal.h"
-#include <sfra_engine.h>
 #include <string.h>
+#include <math.h>
 
+#include "main.h"
+//#include "stm32g4xx_hal.h"
+#include "sfra_engine.h"
+#include "dds.h"
+
+// Macro
 #define PI_F    (3.14159265359f)
 
+
+// Struct Instance
 sfra_t g_sfra;
-
-void LUT_Init(void)
-{
-	/* For Sine Look Up Table */
-    for(int i = 0; i < DDS_LUT_SIZE; i++){
-    	g_sfra.sine_lut[i] = sinf(2.0f * PI_F * ((float)i / (float)DDS_LUT_SIZE));
-    }
-
-}
 
 void SFRA_Run(void)
 {
@@ -37,7 +34,7 @@ void SFRA_Run(void)
 			g_sfra.b_start_flag = true;
 
 			g_sfra.freq_index = 0;
-			SFRA_UpdateFrequency(g_sfra.freq_table[0]);
+			DDS_UpdateFrequency(g_sfra.freq_table[0]);
 			g_sfra.settle_counter = 0;
 			g_sfra.state = SFRA_STATE_SETTLING;
 
@@ -49,8 +46,8 @@ void SFRA_Run(void)
 
             if(g_sfra.settle_counter >= g_sfra.settle_samples)
             {
-                g_sfra.phase_acc = 0;
-                g_sfra.index     = 0;
+                g_dds.u32_phase_acc = 0;
+                g_dds.u32_LUT_index     = 0;
 
                 g_sfra.measure_counter = 0;
 
@@ -93,7 +90,7 @@ void SFRA_Run(void)
             }
             else
             {
-                SFRA_UpdateFrequency(g_sfra.freq_table[g_sfra.freq_index]);
+            	DDS_UpdateFrequency(g_sfra.freq_table[g_sfra.freq_index]);
                 g_sfra.settle_counter = 0;
                 g_sfra.state = SFRA_STATE_SETTLING;
             }
@@ -149,22 +146,12 @@ void SFRA_Calculate(void)
 
 }
 
-void SFRA_UpdateFrequency(float freq)
-{
-    g_sfra.current_freq = freq;
-    g_sfra.phase_inc =(uint32_t)(freq *DDS_FULL_SCALE/ FLOAT_SFRA_FS_HZ);
-    g_sfra.settle_samples = (uint32_t)(SFRA_SETTLING_CYCLES*FLOAT_SFRA_FS_HZ/freq);
-    g_sfra.measure_samples = (uint32_t)(SFRA_MEASUREMENT_CYCLES * FLOAT_SFRA_FS_HZ/ freq);
-    g_sfra.phase_acc = 0;
-    g_sfra.index     = 0;
-}
+
 void SFRA_Init(void)
 {
     memset(&g_sfra, 0, sizeof(g_sfra));
     SFRA_GenerateFrequencyTable();
-
     // Initialize Control Variables
-    g_sfra.amplitude = SINE_INJECTED_AMPLITUDE_ADC;	// For 1V Amplitude Signal in Oscilloscope
     g_sfra.state = SFRA_STATE_INIT;
     g_sfra.b_result_ready_flag=false;
 

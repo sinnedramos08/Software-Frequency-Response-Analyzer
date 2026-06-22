@@ -1,6 +1,4 @@
-../Core/Engine/Src/sfra_engine.c:20:6:LUT_Init	2
-../Core/Engine/Src/sfra_engine.c:29:6:SFRA_Run	10
-../Core/Engine/Src/sfra_engine.c:122:6:SFRA_Calculate	1
-../Core/Engine/Src/sfra_engine.c:152:6:SFRA_UpdateFrequency	1
-../Core/Engine/Src/sfra_engine.c:161:6:SFRA_Init	1
-../Core/Engine/Src/sfra_engine.c:173:6:SFRA_GenerateFrequencyTable	2
+../Core/Engine/Src/sfra_engine.c:26:6:SFRA_Run	10
+../Core/Engine/Src/sfra_engine.c:119:6:SFRA_Calculate	1
+../Core/Engine/Src/sfra_engine.c:150:6:SFRA_Init	1
+../Core/Engine/Src/sfra_engine.c:160:6:SFRA_GenerateFrequencyTable	2

@@ -1,5 +1,5 @@
 Core/Engine/Src/sfra_engine.o: ../Core/Engine/Src/sfra_engine.c \
- ../Drivers/STM32G4xx_HAL_Driver/Inc/stm32g4xx_hal.h \
+ ../Core/Inc/main.h ../Drivers/STM32G4xx_HAL_Driver/Inc/stm32g4xx_hal.h \
  ../Core/Inc/stm32g4xx_hal_conf.h \
  ../Drivers/STM32G4xx_HAL_Driver/Inc/stm32g4xx_hal_rcc.h \
  ../Drivers/STM32G4xx_HAL_Driver/Inc/stm32g4xx_hal_def.h \
@@ -32,7 +32,12 @@ Core/Engine/Src/sfra_engine.o: ../Core/Engine/Src/sfra_engine.c \
  ../Drivers/STM32G4xx_HAL_Driver/Inc/stm32g4xx_hal_pwr_ex.h \
  ../Drivers/STM32G4xx_HAL_Driver/Inc/stm32g4xx_hal_uart.h \
  ../Drivers/STM32G4xx_HAL_Driver/Inc/stm32g4xx_hal_uart_ex.h \
- C:/Users/denni/Desktop/compensator_freqdomain/Software-Frequency-Response-Analyzer/SFRA/Core/Engine/Inc/sfra_engine.h
+ ../Drivers/BSP/STM32G4xx_Nucleo/stm32g4xx_nucleo.h \
+ ../Drivers/BSP/STM32G4xx_Nucleo/stm32g4xx_nucleo_errno.h \
+ ../Core/Inc/stm32g4xx_nucleo_conf.h \
+ C:/Users/denni/Desktop/compensator_freqdomain/Software-Frequency-Response-Analyzer/SFRA/Core/Engine/Inc/sfra_engine.h \
+ C:/Users/denni/Desktop/compensator_freqdomain/Software-Frequency-Response-Analyzer/SFRA/Core/Engine/Inc/dds.h
+../Core/Inc/main.h:
 ../Drivers/STM32G4xx_HAL_Driver/Inc/stm32g4xx_hal.h:
 ../Core/Inc/stm32g4xx_hal_conf.h:
 ../Drivers/STM32G4xx_HAL_Driver/Inc/stm32g4xx_hal_rcc.h:
@@ -66,4 +71,8 @@ Core/Engine/Src/sfra_engine.o: ../Core/Engine/Src/sfra_engine.c \
 ../Drivers/STM32G4xx_HAL_Driver/Inc/stm32g4xx_hal_pwr_ex.h:
 ../Drivers/STM32G4xx_HAL_Driver/Inc/stm32g4xx_hal_uart.h:
 ../Drivers/STM32G4xx_HAL_Driver/Inc/stm32g4xx_hal_uart_ex.h:
+../Drivers/BSP/STM32G4xx_Nucleo/stm32g4xx_nucleo.h:
+../Drivers/BSP/STM32G4xx_Nucleo/stm32g4xx_nucleo_errno.h:
+../Core/Inc/stm32g4xx_nucleo_conf.h:
 C:/Users/denni/Desktop/compensator_freqdomain/Software-Frequency-Response-Analyzer/SFRA/Core/Engine/Inc/sfra_engine.h:
+C:/Users/denni/Desktop/compensator_freqdomain/Software-Frequency-Response-Analyzer/SFRA/Core/Engine/Inc/dds.h:

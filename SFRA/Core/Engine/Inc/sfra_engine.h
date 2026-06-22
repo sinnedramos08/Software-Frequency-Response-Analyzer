@@ -46,13 +46,9 @@
 #define SFRA_FREQ_BUFFER_MAX_POINTS(points)       	((4U * points) + 5U)	// (4 Decades*Points per Decade) + Margin
 
 
-// For Bit Manipulation in Sine Wave Generation
-#define DDS_PHASE_BITS    					32
-#define DDS_LUT_BITS      					13
-#define DDS_LUT_SIZE      					8192
-#define DDS_LUT_SHIFT     					(DDS_PHASE_BITS - DDS_LUT_BITS)
-#define DDS_FULL_SCALE						(4294967296.0f)	// 2^32
 
+
+// Structs and Enum
 typedef enum
 {
     SFRA_STATE_INIT = 0,
@@ -76,20 +72,6 @@ typedef struct
     uint16_t num_freqs;		// Number of frequencies to sweep. When freq_index>=num_freqs, then done sweep
     float current_freq;		// Current frequency tested
     float freq_table[SFRA_FREQ_BUFFER_MAX_POINTS(FREQ_POINTS_PER_DECADE)]; // Array for storing frequencies to test
-
-    /* Signal Generator */
-
-    uint32_t phase_inc;
-    uint32_t phase_acc;
-    uint32_t index;
-
-    float amplitude;	// 1240.9090f
-    float sine_out;		// Output sine: Amplitude*sinf(theta)
-    float cosine_out;	// for cosine
-
-    /* For Reference Signal with Unity Amplitude */
-    float sine_ref;
-    float cosine_ref;
 
     /* Measurement */
     float input_I_acc;
@@ -122,20 +104,17 @@ typedef struct
     uint32_t end_time_ms;
     uint32_t elapsed_time_ms;
 
-    /* Look Up Table Sine */
-    float	sine_lut[DDS_LUT_SIZE];
 } sfra_t;
 
 extern sfra_t g_sfra;
 
 
 
-
+// Function Prototypes
 void SFRA_Init(void);
 void SFRA_Run(void);
 void SFRA_Calculate(void);
-void SFRA_UpdateFrequency(float freq);
 void SFRA_GenerateFrequencyTable(void);
-void LUT_Init(void);
+
 
 #endif /* ENGINE_INC_SFRA_ENGINE_H_ */

@@ -1,0 +1,4 @@
+../Core/Engine/Src/dds.c:17:6:DDS_Init	1
+../Core/Engine/Src/dds.c:23:6:DDS_Sine_LUT_Init	2
+../Core/Engine/Src/dds.c:32:6:DDS_UpdateFrequency	1
+../Core/Engine/Src/dds.c:44:6:DDS_Update	1

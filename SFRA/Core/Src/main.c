@@ -31,10 +31,15 @@
 #include "stdint.h"
 #include <stdbool.h>
 
+// From Engine
 #include "sfra_engine.h"
+#include "dds.h"
+// From Strategies
 #include "compensator_strategy.h"
 #include "sfra_strategies.h"
+// From Alg
 #include "compensator.h"
+
 
 /* USER CODE END Includes */
 
@@ -125,7 +130,7 @@ int main(void)
   compensator_2P2Z_Init(&comp2p2z_vloop, 0.0f, A1_V, A2_V, B0_V, B1_V, B2_V, 1);
 
   SFRA_Init();
-  LUT_Init();
+  DDS_Init();
 
   HAL_DAC_Start(&hdac1, DAC_CHANNEL_1);
   HAL_DAC_Start(&hdac2, DAC_CHANNEL_1);
@@ -271,7 +276,6 @@ void HAL_HRTIM_CounterResetCallback(HRTIM_HandleTypeDef * hhrtim, uint32_t Timer
 	if(HRTIM_TIMERINDEX_TIMER_A == TimerIdx)
 	{
 		SFRA_Run();
-
 		g_active_strategy->ISR();
 
 		// Output DAC Signals

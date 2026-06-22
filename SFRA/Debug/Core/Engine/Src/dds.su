@@ -1,0 +1,4 @@
+../Core/Engine/Src/dds.c:17:6:DDS_Init	8	static
+../Core/Engine/Src/dds.c:23:6:DDS_Sine_LUT_Init	16	static
+../Core/Engine/Src/dds.c:32:6:DDS_UpdateFrequency	16	static
+../Core/Engine/Src/dds.c:44:6:DDS_Update	4	static

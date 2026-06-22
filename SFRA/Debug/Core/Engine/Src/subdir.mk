@@ -5,12 +5,15 @@
 
 # Add inputs and outputs from these tool invocations to the build variables 
 C_SRCS += \
+../Core/Engine/Src/dds.c \
 ../Core/Engine/Src/sfra_engine.c 
 
 OBJS += \
+./Core/Engine/Src/dds.o \
 ./Core/Engine/Src/sfra_engine.o 
 
 C_DEPS += \
+./Core/Engine/Src/dds.d \
 ./Core/Engine/Src/sfra_engine.d 
 
 
@@ -21,7 +24,7 @@ Core/Engine/Src/%.o Core/Engine/Src/%.su Core/Engine/Src/%.cyclo: ../Core/Engine
 clean: clean-Core-2f-Engine-2f-Src
 
 clean-Core-2f-Engine-2f-Src:
-	-$(RM) ./Core/Engine/Src/sfra_engine.cyclo ./Core/Engine/Src/sfra_engine.d ./Core/Engine/Src/sfra_engine.o ./Core/Engine/Src/sfra_engine.su
+	-$(RM) ./Core/Engine/Src/dds.cyclo ./Core/Engine/Src/dds.d ./Core/Engine/Src/dds.o ./Core/Engine/Src/dds.su ./Core/Engine/Src/sfra_engine.cyclo ./Core/Engine/Src/sfra_engine.d ./Core/Engine/Src/sfra_engine.o ./Core/Engine/Src/sfra_engine.su
 
 .PHONY: clean-Core-2f-Engine-2f-Src
 
