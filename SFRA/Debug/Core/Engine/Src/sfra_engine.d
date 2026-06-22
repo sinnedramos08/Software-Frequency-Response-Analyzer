@@ -36,6 +36,9 @@ Core/Engine/Src/sfra_engine.o: ../Core/Engine/Src/sfra_engine.c \
  ../Drivers/BSP/STM32G4xx_Nucleo/stm32g4xx_nucleo_errno.h \
  ../Core/Inc/stm32g4xx_nucleo_conf.h \
  C:/Users/denni/Desktop/compensator_freqdomain/Software-Frequency-Response-Analyzer/SFRA/Core/Engine/Inc/sfra_engine.h \
+ C:/Users/denni/Desktop/compensator_freqdomain/Software-Frequency-Response-Analyzer/SFRA/Core/Strategies/Inc/compensator_strategy.h \
+ C:/Users/denni/Desktop/compensator_freqdomain/Software-Frequency-Response-Analyzer/SFRA/Core/Alg/Inc/compensator.h \
+ C:/Users/denni/Desktop/compensator_freqdomain/Software-Frequency-Response-Analyzer/SFRA/Core/Strategies/Inc/sfra_strategies.h \
  C:/Users/denni/Desktop/compensator_freqdomain/Software-Frequency-Response-Analyzer/SFRA/Core/Engine/Inc/dds.h \
  C:/Users/denni/Desktop/compensator_freqdomain/Software-Frequency-Response-Analyzer/SFRA/Core/Engine/Inc/iq.h
 ../Core/Inc/main.h:
@@ -76,5 +79,8 @@ Core/Engine/Src/sfra_engine.o: ../Core/Engine/Src/sfra_engine.c \
 ../Drivers/BSP/STM32G4xx_Nucleo/stm32g4xx_nucleo_errno.h:
 ../Core/Inc/stm32g4xx_nucleo_conf.h:
 C:/Users/denni/Desktop/compensator_freqdomain/Software-Frequency-Response-Analyzer/SFRA/Core/Engine/Inc/sfra_engine.h:
+C:/Users/denni/Desktop/compensator_freqdomain/Software-Frequency-Response-Analyzer/SFRA/Core/Strategies/Inc/compensator_strategy.h:
+C:/Users/denni/Desktop/compensator_freqdomain/Software-Frequency-Response-Analyzer/SFRA/Core/Alg/Inc/compensator.h:
+C:/Users/denni/Desktop/compensator_freqdomain/Software-Frequency-Response-Analyzer/SFRA/Core/Strategies/Inc/sfra_strategies.h:
 C:/Users/denni/Desktop/compensator_freqdomain/Software-Frequency-Response-Analyzer/SFRA/Core/Engine/Inc/dds.h:
 C:/Users/denni/Desktop/compensator_freqdomain/Software-Frequency-Response-Analyzer/SFRA/Core/Engine/Inc/iq.h:

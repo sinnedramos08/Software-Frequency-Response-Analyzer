@@ -131,6 +131,7 @@ int main(void)
 
   SFRA_Init();
   DDS_Init();
+  CompensatorStrategy_Init();
 
   HAL_DAC_Start(&hdac1, DAC_CHANNEL_1);
   HAL_DAC_Start(&hdac2, DAC_CHANNEL_1);
@@ -271,65 +272,14 @@ void SystemClock_Config(void)
 /* USER CODE BEGIN 4 */
 void HAL_HRTIM_CounterResetCallback(HRTIM_HandleTypeDef * hhrtim, uint32_t TimerIdx)
 {
-#if TOGGLE_SWEEP_ILOOP_FS_100KHZ
-	// Current Loop 100kHz
-	if(HRTIM_TIMERINDEX_TIMER_A == TimerIdx)
+	if(g_active_strategy->timer_idx == TimerIdx)
 	{
 		SFRA_Run();
 		g_active_strategy->ISR();
-
 		// Output DAC Signals
 		HAL_DAC_SetValue(&hdac1, DAC_CHANNEL_1, DAC_ALIGN_12B_R, (uint16_t)(comp2p2z_iloop.f_ref+2048.0f));
 		HAL_DAC_SetValue(&hdac2, DAC_CHANNEL_1, DAC_ALIGN_12B_R,(uint16_t)(comp2p2z_iloop.f_out+2048.0f));
-
-
 	}
-#endif
-#if TOGGLE_SWEEP_VLOOP_FS_6KHZ
-	// Voltage Loop 6kHz
-	if(HRTIM_TIMERINDEX_TIMER_D == TimerIdx)
-	{
-		HAL_GPIO_WritePin(GPIOC, GPIO_PIN_7, GPIO_PIN_SET);
-		SFRA_Run();
-
-		// Create Sine Wave
-		// LUT index (top 13 bits)
-		g_sfra.index = g_sfra.phase_acc >> DDS_LUT_SHIFT;
-		g_sfra.phase_acc += g_sfra.phase_inc;
-
-		// Create the Injected Signal Sine Wave
-		g_sfra.sine_out = g_sfra.amplitude * g_sfra.sine_lut[g_sfra.index];						// Generated sine, injected to 2p2z
-		g_sfra.cosine_out = g_sfra.amplitude * g_sfra.sine_lut[(g_sfra.index + 2048) & 0x1FFF];	// Generated for testing only, not to be processed
-
-		// Create a reference signal sine and cosine
-		g_sfra.sine_ref = g_sfra.sine_lut[g_sfra.index];
-		g_sfra.cosine_ref = g_sfra.sine_lut[(g_sfra.index + 2048) & 0x1FFF];
-
-		// Run Compensator 2p2z
-		comp2p2z_vloop.f_ref = g_sfra.sine_out;
-		comp2p2z_vloop.f_fdbk = 0.0f;
-		compensator_2P2Z_Update(&comp2p2z_vloop);
-
-		// Accumulator During FSM Measuring
-		if(g_sfra.state == SFRA_STATE_MEASURING)
-		{
-		    g_sfra.input_I_acc += g_sfra.sine_out * g_sfra.sine_ref;
-
-		    g_sfra.input_Q_acc +=g_sfra.sine_out * g_sfra.cosine_ref;
-
-		    g_sfra.output_I_acc += comp2p2z_vloop.f_out * g_sfra.sine_ref;
-
-		    g_sfra.output_Q_acc += comp2p2z_vloop.f_out *g_sfra.cosine_ref;
-		}
-
-		// Output DAC Signals
-		HAL_DAC_SetValue(&hdac1, DAC_CHANNEL_1, DAC_ALIGN_12B_R, (uint16_t)(comp2p2z_vloop.f_ref+2048.0f));
-		HAL_DAC_SetValue(&hdac2, DAC_CHANNEL_1, DAC_ALIGN_12B_R,(uint16_t)(comp2p2z_vloop.f_out+2048.0f));
-		//HAL_DAC_SetValue(&hdac2, DAC_CHANNEL_1, DAC_ALIGN_12B_R,(uint16_t)(g_sfra.cosine_out+2048.0f));
-		HAL_GPIO_WritePin(GPIOC, GPIO_PIN_7, GPIO_PIN_RESET);
-
-	}
-#endif
 }
 
 /* USER CODE END 4 */

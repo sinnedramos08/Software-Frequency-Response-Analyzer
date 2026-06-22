@@ -10,8 +10,10 @@
 
 typedef struct
 {
-    uint32_t timer_idx;
+
     void (*ISR)(void); 	// Pointer to a function
+    uint32_t timer_idx;
+
 
 } sfra_strategy_t;
 

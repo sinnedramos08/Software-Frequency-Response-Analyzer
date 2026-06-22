@@ -16,6 +16,7 @@
 #include "sfra_engine.h"
 #include "dds.h"
 #include "iq.h"
+#include "compensator_strategy.h"
 
 // Macro
 #define PI_F    (3.14159265359f)
@@ -23,6 +24,14 @@
 
 // Struct Instance
 sfra_t g_sfra;
+
+// Static function Prototypes
+static void SFRA_StateInit_Handler(void);
+static void SFRA_StateSettling_Handler(void);
+static void SFRA_StateMeasuring_Handler(void);
+static void SFRA_StateCalculate_Handler(void);
+static void SFRA_StateNextFreq_Handler(void);
+static void SFRA_StateDone_Handler(void);
 
 void SFRA_Run(void)
 {
@@ -44,7 +53,7 @@ void SFRA_Run(void)
         	SFRA_StateNextFreq_Handler();
             break;
         case SFRA_STATE_DONE:
-        	SFRA_StateDone_Handler();\
+        	SFRA_StateDone_Handler();
         	break;
         case SFRA_STATE_STOP:
         	break;
@@ -194,3 +203,7 @@ void SFRA_GenerateFrequencyTable(void){
     g_sfra.freq_table[g_sfra.num_freqs - 1U] = (float)FREQ_STOP_HZ;
 
 }
+
+
+
+

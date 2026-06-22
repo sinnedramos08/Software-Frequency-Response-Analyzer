@@ -13,11 +13,32 @@
 #include "dds.h"
 #include "iq.h"
 
+// Variables
+static compensator_strategy_loop_t g_comp_strategy_loop;
+
 const sfra_strategy_t compensator_strategy =
 {
-    .timer_idx = HRTIM_TIMERINDEX_TIMER_A,
-    .ISR = CompensatorStrategy_ISR
+    .ISR = CompensatorStrategy_ISR,
+#if TOGGLE_SWEEP_ILOOP_FS_100KHZ
+	.timer_idx = HRTIM_TIMERINDEX_TIMER_A
+#elif TOGGLE_SWEEP_VLOOP_FS_6KHZ
+	.timer_idx = HRTIM_TIMERINDEX_TIMER_D
+#endif
 };
+
+// Functions
+void CompensatorStrategy_Init(void)
+{
+#if TOGGLE_SWEEP_ILOOP_FS_100KHZ
+
+	g_comp_strategy_loop.p_comp = &comp2p2z_iloop;
+
+#elif TOGGLE_SWEEP_VLOOP_FS_6KHZ
+
+	g_comp_strategy_loop.p_comp = &comp2p2z_vloop;
+
+#endif
+}
 
 
 void CompensatorStrategy_ISR(void)
@@ -25,14 +46,14 @@ void CompensatorStrategy_ISR(void)
 	DDS_Update();
 
 	// Run Compensator 2p2z
-	comp2p2z_iloop.f_ref = g_dds.f_sine_out;
-	comp2p2z_iloop.f_fdbk = 0.0f;
-	compensator_2P2Z_Update(&comp2p2z_iloop);
+	g_comp_strategy_loop.p_comp->f_ref = g_dds.f_sine_out;
+	g_comp_strategy_loop.p_comp->f_fdbk = 0.0f;
+	compensator_2P2Z_Update(g_comp_strategy_loop.p_comp);
 
 	// Accumulator During FSM Measuring
 	if(g_sfra.state == SFRA_STATE_MEASURING)
 	{
-		IQ_Accumulate(comp2p2z_iloop.f_ref, comp2p2z_iloop.f_out, g_dds.f_sine_ref, g_dds.f_cosine_ref);
+		IQ_Accumulate(g_comp_strategy_loop.p_comp->f_ref, g_comp_strategy_loop.p_comp->f_out, g_dds.f_sine_ref, g_dds.f_cosine_ref);
 
 	}
 }
