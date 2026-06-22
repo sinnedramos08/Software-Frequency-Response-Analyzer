@@ -8,7 +8,11 @@
 #ifndef STRATEGIES_INC_COMPENSATOR_STRATEGY_H_
 #define STRATEGIES_INC_COMPENSATOR_STRATEGY_H_
 
-#include <sfra_engine.h>
+#include "sfra_engine.h"
+#include "compensator.h"
+#include "sfra_strategies.h"
+
+extern const sfra_strategy_t compensator_strategy;
 
 void CompensatorStrategy_ISR(void);
 

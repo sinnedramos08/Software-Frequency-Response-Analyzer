@@ -9,6 +9,7 @@
 #include "stdio.h"
 #include <stdbool.h>
 #include <math.h>
+#include "stm32g4xx_hal.h"
 #include <sfra_engine.h>
 #include <string.h>
 

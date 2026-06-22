@@ -33,6 +33,7 @@
 
 #include "sfra_engine.h"
 #include "compensator_strategy.h"
+#include "sfra_strategies.h"
 #include "compensator.h"
 
 /* USER CODE END Includes */
@@ -70,6 +71,7 @@
 COM_InitTypeDef BspCOMInit;
 
 /* USER CODE BEGIN PV */
+const sfra_strategy_t *g_active_strategy;
 
 /* USER CODE END PV */
 
@@ -92,6 +94,7 @@ int main(void)
 {
 
   /* USER CODE BEGIN 1 */
+	g_active_strategy = &compensator_strategy;
 
   /* USER CODE END 1 */
 
@@ -269,7 +272,7 @@ void HAL_HRTIM_CounterResetCallback(HRTIM_HandleTypeDef * hhrtim, uint32_t Timer
 	{
 		SFRA_Run();
 
-		CompensatorStrategy_ISR();
+		g_active_strategy->ISR();
 
 		// Output DAC Signals
 		HAL_DAC_SetValue(&hdac1, DAC_CHANNEL_1, DAC_ALIGN_12B_R, (uint16_t)(comp2p2z_iloop.f_ref+2048.0f));

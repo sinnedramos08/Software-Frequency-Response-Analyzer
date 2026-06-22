@@ -22,6 +22,7 @@ C_DEPS :=
 
 # Every subdirectory with source files must be described here
 SUBDIRS := \
+Core/Alg/Src \
 Core/Engine/Src \
 Core/Src \
 Core/Startup \

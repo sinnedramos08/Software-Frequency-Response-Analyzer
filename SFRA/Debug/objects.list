@@ -1,6 +1,6 @@
+"./Core/Alg/Src/compensator.o"
 "./Core/Engine/Src/sfra_engine.o"
 "./Core/Src/adc.o"
-"./Core/Src/compensator.o"
 "./Core/Src/dac.o"
 "./Core/Src/gpio.o"
 "./Core/Src/hrtim.o"

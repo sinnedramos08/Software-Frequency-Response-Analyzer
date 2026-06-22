@@ -7,7 +7,15 @@
 
 #include <sfra_engine.h>
 #include <compensator_strategy.h>
+#include "sfra_strategies.h"
+#include "main.h"
 #include <compensator.h>
+
+const sfra_strategy_t compensator_strategy =
+{
+    .timer_idx = HRTIM_TIMERINDEX_TIMER_A,
+    .ISR = CompensatorStrategy_ISR
+};
 
 
 void CompensatorStrategy_ISR(void)
