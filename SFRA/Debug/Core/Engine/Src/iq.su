@@ -1,3 +1,4 @@
 ../Core/Engine/Src/iq.c:22:6:IQ_Init	8	static
 ../Core/Engine/Src/iq.c:27:6:IQ_Reset	4	static
 ../Core/Engine/Src/iq.c:37:6:IQ_Accumulate	24	static
+../Core/Engine/Src/iq.c:46:6:IQ_Calculate	16	static

@@ -1,4 +1,4 @@
 ../Core/Engine/Src/sfra_engine.c:27:6:SFRA_Run	8	static
-../Core/Engine/Src/sfra_engine.c:115:6:SFRA_Calculate	48	static
-../Core/Engine/Src/sfra_engine.c:146:6:SFRA_Init	8	static
-../Core/Engine/Src/sfra_engine.c:156:6:SFRA_GenerateFrequencyTable	24	static
+../Core/Engine/Src/sfra_engine.c:116:6:SFRA_StateCalculate_Handler	48	static
+../Core/Engine/Src/sfra_engine.c:147:6:SFRA_Init	8	static
+../Core/Engine/Src/sfra_engine.c:157:6:SFRA_GenerateFrequencyTable	24	static

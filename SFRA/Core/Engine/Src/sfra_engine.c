@@ -69,7 +69,7 @@ void SFRA_Run(void)
             break;
         case SFRA_STATE_CALCULATE:
 
-            SFRA_Calculate();
+        	SFRA_StateCalculate_Handler();
 
             g_sfra.state = SFRA_STATE_NEXT_FREQ;
 
@@ -111,37 +111,38 @@ void SFRA_Run(void)
     }
 }
 
+// FSM Handlers
 
-void SFRA_Calculate(void)
+void SFRA_StateCalculate_Handler(void)
 {
-	float input_mag;
-	float input_amp;
-	float input_phase;
-	float output_mag;
-	float output_amp;
-	float output_phase;
+	iq_result_t g_iq_result_t;
+	float gain;
 
-	input_mag =sqrtf(g_iq.f_input_I_acc * g_iq.f_input_I_acc +g_iq.f_input_Q_acc * g_iq.f_input_Q_acc);
-	input_amp =2.0f * input_mag /(float)g_sfra.measure_samples;
-	input_phase =atan2f(g_iq.f_input_Q_acc,g_iq.f_input_I_acc);
+	IQ_Calculate(g_sfra.measure_samples, &g_iq_result_t);
 
-	output_mag =sqrtf(g_iq.f_output_I_acc * g_iq.f_output_I_acc +g_iq.f_output_Q_acc * g_iq.f_output_Q_acc);
-	output_amp =2.0f * output_mag /(float)g_sfra.measure_samples;
-	output_phase =atan2f(g_iq.f_output_Q_acc,g_iq.f_output_I_acc);
+	// Guard for input_amp ~= 0
+	if(g_iq_result_t.f_input_amp > 1e-12f)
+	{
+	    gain = g_iq_result_t.f_output_amp / g_iq_result_t.f_input_amp;
 
-	float gain = output_amp / input_amp;
+	}
+	else
+	{
+	    gain = 0.0f;
+
+	}
+
 	float gain_db = 20.0f * log10f(gain);
-	float phase_deg = (output_phase - input_phase)*180.0f / PI_F;
-
+	float phase_deg = (g_iq_result_t.f_output_phase - g_iq_result_t.f_input_phase)*180.0f / PI_F;
 
 	g_sfra.gain_db[g_sfra.freq_index] = gain_db;
 	g_sfra.phase_deg[g_sfra.freq_index] = phase_deg;
 
 	g_sfra.b_result_ready_flag=true;
-
-
 }
 
+
+// Initializations
 
 void SFRA_Init(void)
 {

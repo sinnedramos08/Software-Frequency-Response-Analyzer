@@ -108,7 +108,7 @@ extern sfra_t g_sfra;
 // Function Prototypes
 void SFRA_Init(void);
 void SFRA_Run(void);
-void SFRA_Calculate(void);
+void SFRA_StateCalculate_Handler(void);
 void SFRA_GenerateFrequencyTable(void);
 
 
