@@ -1,2 +1,2 @@
 C:/Users/denni/Desktop/compensator_freqdomain/Software-Frequency-Response-Analyzer/SFRA/Core/Alg/Inc/compensator.h:76:20:compensator_2P2Z_Update	24	static
-../Core/Strategies/Src/compensator_strategy.c:22:6:CompensatorStrategy_ISR	8	static
+../Core/Strategies/Src/compensator_strategy.c:23:6:CompensatorStrategy_ISR	8	static

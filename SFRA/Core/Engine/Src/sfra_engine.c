@@ -15,6 +15,7 @@
 //#include "stm32g4xx_hal.h"
 #include "sfra_engine.h"
 #include "dds.h"
+#include "iq.h"
 
 // Macro
 #define PI_F    (3.14159265359f)
@@ -51,12 +52,7 @@ void SFRA_Run(void)
 
                 g_sfra.measure_counter = 0;
 
-                g_sfra.input_I_acc  = 0.0f;
-                g_sfra.input_Q_acc  = 0.0f;
-
-                g_sfra.output_I_acc = 0.0f;
-                g_sfra.output_Q_acc = 0.0f;
-
+                IQ_Reset();
                 g_sfra.state = SFRA_STATE_MEASURING;
             }
 
@@ -125,13 +121,13 @@ void SFRA_Calculate(void)
 	float output_amp;
 	float output_phase;
 
-	input_mag =sqrtf(g_sfra.input_I_acc * g_sfra.input_I_acc +g_sfra.input_Q_acc * g_sfra.input_Q_acc);
+	input_mag =sqrtf(g_iq.f_input_I_acc * g_iq.f_input_I_acc +g_iq.f_input_Q_acc * g_iq.f_input_Q_acc);
 	input_amp =2.0f * input_mag /(float)g_sfra.measure_samples;
-	input_phase =atan2f(g_sfra.input_Q_acc,g_sfra.input_I_acc);
+	input_phase =atan2f(g_iq.f_input_Q_acc,g_iq.f_input_I_acc);
 
-	output_mag =sqrtf(g_sfra.output_I_acc * g_sfra.output_I_acc +g_sfra.output_Q_acc * g_sfra.output_Q_acc);
+	output_mag =sqrtf(g_iq.f_output_I_acc * g_iq.f_output_I_acc +g_iq.f_output_Q_acc * g_iq.f_output_Q_acc);
 	output_amp =2.0f * output_mag /(float)g_sfra.measure_samples;
-	output_phase =atan2f(g_sfra.output_Q_acc,g_sfra.output_I_acc);
+	output_phase =atan2f(g_iq.f_output_Q_acc,g_iq.f_output_I_acc);
 
 	float gain = output_amp / input_amp;
 	float gain_db = 20.0f * log10f(gain);

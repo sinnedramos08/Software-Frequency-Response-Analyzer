@@ -73,12 +73,7 @@ typedef struct
     float current_freq;		// Current frequency tested
     float freq_table[SFRA_FREQ_BUFFER_MAX_POINTS(FREQ_POINTS_PER_DECADE)]; // Array for storing frequencies to test
 
-    /* Measurement */
-    float input_I_acc;
-    float input_Q_acc;
 
-    float output_I_acc;
-    float output_Q_acc;
 
     uint32_t settle_counter;
     uint32_t settle_samples;		// Samples = #cycles * (Fsampling/current_freq)

@@ -1,5 +1,6 @@
 "./Core/Alg/Src/compensator.o"
 "./Core/Engine/Src/dds.o"
+"./Core/Engine/Src/iq.o"
 "./Core/Engine/Src/sfra_engine.o"
 "./Core/Src/adc.o"
 "./Core/Src/dac.o"

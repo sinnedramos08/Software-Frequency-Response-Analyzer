@@ -1,0 +1,3 @@
+../Core/Engine/Src/iq.c:22:6:IQ_Init	1
+../Core/Engine/Src/iq.c:27:6:IQ_Reset	1
+../Core/Engine/Src/iq.c:37:6:IQ_Accumulate	1

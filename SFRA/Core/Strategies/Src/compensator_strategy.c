@@ -11,6 +11,7 @@
 #include "main.h"
 #include "compensator.h"
 #include "dds.h"
+#include "iq.h"
 
 const sfra_strategy_t compensator_strategy =
 {
@@ -31,12 +32,7 @@ void CompensatorStrategy_ISR(void)
 	// Accumulator During FSM Measuring
 	if(g_sfra.state == SFRA_STATE_MEASURING)
 	{
-	    g_sfra.input_I_acc += g_dds.f_sine_out * g_dds.f_sine_ref;
+		IQ_Accumulate(comp2p2z_iloop.f_ref, comp2p2z_iloop.f_out, g_dds.f_sine_ref, g_dds.f_cosine_ref);
 
-	    g_sfra.input_Q_acc +=g_dds.f_sine_out * g_dds.f_cosine_ref;
-
-	    g_sfra.output_I_acc += comp2p2z_iloop.f_out * g_dds.f_sine_ref;
-
-	    g_sfra.output_Q_acc += comp2p2z_iloop.f_out *g_dds.f_cosine_ref;
 	}
 }
