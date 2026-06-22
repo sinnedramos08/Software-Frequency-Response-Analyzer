@@ -108,8 +108,13 @@ extern sfra_t g_sfra;
 // Function Prototypes
 void SFRA_Init(void);
 void SFRA_Run(void);
-void SFRA_StateCalculate_Handler(void);
 void SFRA_GenerateFrequencyTable(void);
 
+static void SFRA_StateInit_Handler(void);
+static void SFRA_StateSettling_Handler(void);
+static void SFRA_StateMeasuring_Handler(void);
+static void SFRA_StateCalculate_Handler(void);
+static void SFRA_StateNextFreq_Handler(void);
+static void SFRA_StateDone_Handler(void);
 
 #endif /* ENGINE_INC_SFRA_ENGINE_H_ */

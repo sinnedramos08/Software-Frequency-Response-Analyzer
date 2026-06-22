@@ -29,91 +29,71 @@ void SFRA_Run(void)
     switch(g_sfra.state)
     {
 		case SFRA_STATE_INIT:
-
-			g_sfra.start_time_ms = HAL_GetTick();
-
-			g_sfra.b_start_flag = true;
-
-			g_sfra.freq_index = 0;
-			DDS_UpdateFrequency(g_sfra.freq_table[0]);
-			g_sfra.settle_counter = 0;
-			g_sfra.state = SFRA_STATE_SETTLING;
-
+			SFRA_StateInit_Handler();
 			break;
-
         case SFRA_STATE_SETTLING:
-
-            g_sfra.settle_counter++;
-
-            if(g_sfra.settle_counter >= g_sfra.settle_samples)
-            {
-                g_dds.u32_phase_acc = 0;
-                g_dds.u32_LUT_index     = 0;
-
-                g_sfra.measure_counter = 0;
-
-                IQ_Reset();
-                g_sfra.state = SFRA_STATE_MEASURING;
-            }
-
+			SFRA_StateSettling_Handler();
             break;
         case SFRA_STATE_MEASURING:
-
-            g_sfra.measure_counter++;
-
-            if(g_sfra.measure_counter >= g_sfra.measure_samples)
-            {
-                g_sfra.state = SFRA_STATE_CALCULATE;
-            }
-
+        	SFRA_StateMeasuring_Handler();
             break;
         case SFRA_STATE_CALCULATE:
-
         	SFRA_StateCalculate_Handler();
-
-            g_sfra.state = SFRA_STATE_NEXT_FREQ;
-
             break;
-
         case SFRA_STATE_NEXT_FREQ:
-
-            g_sfra.freq_index++;
-
-            if(g_sfra.freq_index >= g_sfra.num_freqs)
-            {
-            	g_sfra.b_result_ready_flag = false;
-                g_sfra.state = SFRA_STATE_DONE;
-            }
-            else
-            {
-            	DDS_UpdateFrequency(g_sfra.freq_table[g_sfra.freq_index]);
-                g_sfra.settle_counter = 0;
-                g_sfra.state = SFRA_STATE_SETTLING;
-            }
-
+        	SFRA_StateNextFreq_Handler();
             break;
-
         case SFRA_STATE_DONE:
-            g_sfra.end_time_ms = HAL_GetTick();
-
-            g_sfra.elapsed_time_ms = g_sfra.end_time_ms - g_sfra.start_time_ms;
-
-
-			g_sfra.b_end_flag = true;
-			g_sfra.state = SFRA_STATE_STOP;
+        	SFRA_StateDone_Handler();\
         	break;
-
         case SFRA_STATE_STOP:
         	break;
-
         default:
             break;
     }
 }
 
 // FSM Handlers
+static void SFRA_StateInit_Handler(void)
+{
+	g_sfra.start_time_ms = HAL_GetTick();
+	g_sfra.b_start_flag = true;
+	g_sfra.freq_index = 0;
+	DDS_UpdateFrequency(g_sfra.freq_table[0]);
+	g_sfra.settle_counter = 0;
+	g_sfra.state = SFRA_STATE_SETTLING;
 
-void SFRA_StateCalculate_Handler(void)
+}
+
+static void SFRA_StateSettling_Handler(void)
+{
+    g_sfra.settle_counter++;
+
+    if(g_sfra.settle_counter >= g_sfra.settle_samples)
+    {
+        g_dds.u32_phase_acc = 0;
+        g_dds.u32_LUT_index     = 0;
+
+        g_sfra.measure_counter = 0;
+
+        IQ_Reset();
+        g_sfra.state = SFRA_STATE_MEASURING;
+    }
+
+}
+
+static void SFRA_StateMeasuring_Handler(void)
+{
+    g_sfra.measure_counter++;
+
+    if(g_sfra.measure_counter >= g_sfra.measure_samples)
+    {
+        g_sfra.state = SFRA_STATE_CALCULATE;
+    }
+
+}
+
+static void SFRA_StateCalculate_Handler(void)
 {
 	iq_result_t g_iq_result_t;
 	float gain;
@@ -139,9 +119,41 @@ void SFRA_StateCalculate_Handler(void)
 	g_sfra.phase_deg[g_sfra.freq_index] = phase_deg;
 
 	g_sfra.b_result_ready_flag=true;
+    g_sfra.state = SFRA_STATE_NEXT_FREQ;
 }
 
+static void SFRA_StateNextFreq_Handler(void)
+{
+    g_sfra.freq_index++;
 
+    if(g_sfra.freq_index >= g_sfra.num_freqs)
+    {
+        g_sfra.b_result_ready_flag = false;
+
+        g_sfra.state =SFRA_STATE_DONE;
+    }
+    else
+    {
+        DDS_UpdateFrequency(
+            g_sfra.freq_table[g_sfra.freq_index]);
+
+        g_sfra.settle_counter = 0;
+
+        g_sfra.state = SFRA_STATE_SETTLING;
+    }
+
+}
+
+static void SFRA_StateDone_Handler(void)
+{
+    g_sfra.end_time_ms = HAL_GetTick();
+
+    g_sfra.elapsed_time_ms = g_sfra.end_time_ms - g_sfra.start_time_ms;
+
+
+	g_sfra.b_end_flag = true;
+	g_sfra.state = SFRA_STATE_STOP;
+}
 // Initializations
 
 void SFRA_Init(void)
