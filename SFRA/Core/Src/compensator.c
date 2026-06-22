@@ -6,6 +6,9 @@
  */
 #include "compensator.h"
 
+compensator_2p2z_t 		comp2p2z_iloop;
+compensator_2p2z_t		comp2p2z_vloop;
+
 void compensator_2P2Z_Init(compensator_2p2z_t * p_compensator, float f_ref, float f_a1, float f_a2, float f_b0, float f_b1, float f_b2, float f_k)
 {
 	for(int i=0;i<3;i++)

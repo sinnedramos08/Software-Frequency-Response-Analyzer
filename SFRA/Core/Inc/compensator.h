@@ -65,6 +65,9 @@ typedef struct
 	uint16_t	u16_adc_buffer[2];
 }compensator_2p2z_t;
 
+extern compensator_2p2z_t 		comp2p2z_iloop;
+extern compensator_2p2z_t		comp2p2z_vloop;
+
 //Function prototypes
 void compensator_2P2Z_Init(compensator_2p2z_t * p_compensator, float f_ref, float f_a1, float f_a2, float f_b0, float f_b1, float f_b2, float f_k);
 inline static void compensator_2P2Z_Update(compensator_2p2z_t * p_compensator);
@@ -95,5 +98,6 @@ inline static void compensator_2P2Z_Update(compensator_2p2z_t * p_compensator)
 	p_compensator->f_out = acc;
 
 }
+
 
 #endif /* _COMPENSATOR_H_ */

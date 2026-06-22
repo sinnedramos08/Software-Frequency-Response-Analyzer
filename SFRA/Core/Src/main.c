@@ -17,19 +17,24 @@
   */
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
+
 #include "main.h"
+#include "adc.h"
 #include "dac.h"
 #include "hrtim.h"
 #include "gpio.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include "compensator.h"
 #include "math.h"
-#include "sfra.h"
 #include "stdio.h"
 #include "stdint.h"
 #include <stdbool.h>
+
+#include "sfra_engine.h"
+#include "compensator_strategy.h"
+#include "compensator.h"
+
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -53,8 +58,6 @@
 #define PI_F       (3.14159265359f)
 
 
-
-
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -67,8 +70,7 @@
 COM_InitTypeDef BspCOMInit;
 
 /* USER CODE BEGIN PV */
-compensator_2p2z_t 		comp2p2z_iloop;
-compensator_2p2z_t		comp2p2z_vloop;
+
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -114,6 +116,7 @@ int main(void)
   MX_HRTIM1_Init();
   MX_DAC1_Init();
   MX_DAC2_Init();
+  MX_ADC2_Init();
   /* USER CODE BEGIN 2 */
   compensator_2P2Z_Init(&comp2p2z_iloop, 0.0f, A1_I, A2_I, B0_I, B1_I, B2_I, 1);
   compensator_2P2Z_Init(&comp2p2z_vloop, 0.0f, A1_V, A2_V, B0_V, B1_V, B2_V, 1);
@@ -264,45 +267,14 @@ void HAL_HRTIM_CounterResetCallback(HRTIM_HandleTypeDef * hhrtim, uint32_t Timer
 	// Current Loop 100kHz
 	if(HRTIM_TIMERINDEX_TIMER_A == TimerIdx)
 	{
-		HAL_GPIO_WritePin(GPIOC, GPIO_PIN_7, GPIO_PIN_SET);
-
 		SFRA_Run();
 
-		// Create Sine Wave
-		// LUT index (top 13 bits)
-		g_sfra.index = g_sfra.phase_acc >> DDS_LUT_SHIFT;
-		g_sfra.phase_acc += g_sfra.phase_inc;
-
-		// Create the Injected Signal Sine Wave
-		g_sfra.sine_out = g_sfra.amplitude * g_sfra.sine_lut[g_sfra.index];						// Generated sine, injected to 2p2z
-		g_sfra.cosine_out = g_sfra.amplitude * g_sfra.sine_lut[(g_sfra.index + 2048) & 0x1FFF];	// Generated for testing only, not to be processed
-
-		// Create a reference signal sine and cosine
-		g_sfra.sine_ref = g_sfra.sine_lut[g_sfra.index];
-		g_sfra.cosine_ref = g_sfra.sine_lut[(g_sfra.index + 2048) & 0x1FFF];
-
-		// Run Compensator 2p2z
-		comp2p2z_iloop.f_ref = g_sfra.sine_out;
-		comp2p2z_iloop.f_fdbk = 0.0f;
-		compensator_2P2Z_Update(&comp2p2z_iloop);
-
-		// Accumulator During FSM Measuring
-		if(g_sfra.state == SFRA_STATE_MEASURING)
-		{
-		    g_sfra.input_I_acc += g_sfra.sine_out * g_sfra.sine_ref;
-
-		    g_sfra.input_Q_acc +=g_sfra.sine_out * g_sfra.cosine_ref;
-
-		    g_sfra.output_I_acc += comp2p2z_iloop.f_out * g_sfra.sine_ref;
-
-		    g_sfra.output_Q_acc += comp2p2z_iloop.f_out *g_sfra.cosine_ref;
-		}
+		CompensatorStrategy_ISR();
 
 		// Output DAC Signals
 		HAL_DAC_SetValue(&hdac1, DAC_CHANNEL_1, DAC_ALIGN_12B_R, (uint16_t)(comp2p2z_iloop.f_ref+2048.0f));
 		HAL_DAC_SetValue(&hdac2, DAC_CHANNEL_1, DAC_ALIGN_12B_R,(uint16_t)(comp2p2z_iloop.f_out+2048.0f));
-		//HAL_DAC_SetValue(&hdac2, DAC_CHANNEL_1, DAC_ALIGN_12B_R,(uint16_t)(g_sfra.cosine_out+2048.0f));
-		HAL_GPIO_WritePin(GPIOC, GPIO_PIN_7, GPIO_PIN_RESET);
+
 
 	}
 #endif

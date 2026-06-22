@@ -1,19 +1,18 @@
 /*
- * sfra.h
+ * sfra_engine.h
  *
- *  Created on: Jun 14, 2026
+ *  Created on: Jun 22, 2026
  *      Author: denni
  */
 
-#ifndef SFRA_H_
-#define SFRA_H_
+#ifndef ENGINE_INC_SFRA_ENGINE_H_
+#define ENGINE_INC_SFRA_ENGINE_H_
 
 #include <stdint.h>
 #include <stdbool.h>
 
 #define TOGGLE_SWEEP_ILOOP_FS_100KHZ		(1U)
 #define TOGGLE_SWEEP_VLOOP_FS_6KHZ			(0U)
-
 
 #if TOGGLE_SWEEP_ILOOP_FS_100KHZ
 #define FLOAT_SFRA_FS_HZ                 	(100000.0f)
@@ -54,7 +53,6 @@
 #define DDS_LUT_SHIFT     					(DDS_PHASE_BITS - DDS_LUT_BITS)
 #define DDS_FULL_SCALE						(4294967296.0f)	// 2^32
 
-
 typedef enum
 {
     SFRA_STATE_INIT = 0,
@@ -66,6 +64,7 @@ typedef enum
 	SFRA_STATE_STOP
 
 } sfra_state_t;
+
 
 typedef struct
 {
@@ -129,11 +128,14 @@ typedef struct
 
 extern sfra_t g_sfra;
 
+
+
+
 void SFRA_Init(void);
 void SFRA_Run(void);
-void SFRA_Run_Meas(void);
 void SFRA_Calculate(void);
 void SFRA_UpdateFrequency(float freq);
 void SFRA_GenerateFrequencyTable(void);
 void LUT_Init(void);
-#endif
+
+#endif /* ENGINE_INC_SFRA_ENGINE_H_ */

@@ -1,0 +1,2 @@
+../Core/Inc/compensator.h:76:20:compensator_2P2Z_Update	24	static
+../Core/Strategies/Src/compensator_strategy.c:13:6:CompensatorStrategy_ISR	8	static

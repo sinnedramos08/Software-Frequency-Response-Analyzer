@@ -1,15 +1,15 @@
 /*
- * sfra.c
+ * sfra_engine.c
  *
- *  Created on: Jun 14, 2026
+ *  Created on: Jun 22, 2026
  *      Author: denni
  */
 
 
-#include "sfra.h"
 #include "stdio.h"
 #include <stdbool.h>
 #include <math.h>
+#include <sfra_engine.h>
 #include <string.h>
 
 #define PI_F    (3.14159265359f)
@@ -160,41 +160,6 @@ void SFRA_UpdateFrequency(float freq)
 void SFRA_Init(void)
 {
     memset(&g_sfra, 0, sizeof(g_sfra));
-#if 0
-    g_sfra.freq_table[0]  = 50.0f;
-    g_sfra.freq_table[1]  = 63.1f;
-    g_sfra.freq_table[2]  = 79.4f;
-    g_sfra.freq_table[3]  = 100.0f;
-    g_sfra.freq_table[4]  = 126.0f;
-    g_sfra.freq_table[5]  = 158.0f;
-    g_sfra.freq_table[6]  = 200.0f;
-    g_sfra.freq_table[7]  = 251.0f;
-    g_sfra.freq_table[8]  = 316.0f;
-    g_sfra.freq_table[9]  = 398.0f;
-    g_sfra.freq_table[10] = 501.0f;
-    g_sfra.freq_table[11] = 631.0f;
-    g_sfra.freq_table[12] = 794.0f;
-    g_sfra.freq_table[13] = 1000.0f;
-
-    g_sfra.freq_table[14] = 1260.0f;
-    g_sfra.freq_table[15] = 1580.0f;
-    g_sfra.freq_table[16] = 2000.0f;
-    g_sfra.freq_table[17] = 2510.0f;
-    g_sfra.freq_table[18] = 3160.0f;
-    g_sfra.freq_table[19] = 3980.0f;
-    g_sfra.freq_table[20] = 5010.0f;
-    g_sfra.freq_table[21] = 6310.0f;
-    g_sfra.freq_table[22] = 7940.0f;
-    g_sfra.freq_table[23] = 10000.0f;
-
-    g_sfra.freq_table[24] = 12600.0f;
-    g_sfra.freq_table[25] = 15800.0f;
-    g_sfra.freq_table[26] = 20000.0f;
-    g_sfra.freq_table[27] = 25100.0f;
-    g_sfra.freq_table[28] = 31600.0f;
-    g_sfra.freq_table[29] = 39800.0f;
-    g_sfra.num_freqs = 30;
-#endif
     SFRA_GenerateFrequencyTable();
 
     // Initialize Control Variables
