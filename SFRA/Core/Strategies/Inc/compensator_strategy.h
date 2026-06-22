@@ -31,8 +31,8 @@ void CompensatorStrategy_ISR(void);
 
 #endif /* STRATEGIES_INC_COMPENSATOR_STRATEGY_H_ */
 
-#define TOGGLE_SWEEP_ILOOP_FS_100KHZ		(1U)
-#define TOGGLE_SWEEP_VLOOP_FS_6KHZ			(0U)
+#define TOGGLE_SWEEP_ILOOP_FS_100KHZ		(0U)
+#define TOGGLE_SWEEP_VLOOP_FS_6KHZ			(1U)
 
 #if TOGGLE_SWEEP_ILOOP_FS_100KHZ
 #define FLOAT_SFRA_FS_HZ                 	(100000.0f)
