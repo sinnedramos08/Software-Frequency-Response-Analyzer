@@ -14,7 +14,7 @@
 #include "iq.h"
 
 // Variables
-static compensator_strategy_loop_t g_comp_strategy_loop;
+static compensator_strategy_loop_t g_comp_strategy_loop;	// For which type of loop vloop or iloop
 
 const sfra_strategy_t compensator_strategy =
 {

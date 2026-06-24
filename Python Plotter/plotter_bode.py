@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 import serial
 
 # Configuration
-SERIAL_PORT = "COM11"          # Change this to your serial port
+SERIAL_PORT = "COM7"          # Change this to your serial port
 SERIAL_BAUD = 115200           # Change this if your UART uses another baud rate
 COMPARE_CSV_PATH ="Python Plotter\\SIM_ILOOP_FX_6KHZ_PM_60DEG_GM_31DB.csv"         # Set to a compare CSV path, or leave empty to disable
 SAVE_FILENAME = "sweep_data.csv"  # Default file name for UART sweep save
