@@ -9,6 +9,9 @@
 #include <stdbool.h>
 #include "dds.h"
 #include "sfra_engine.h"
+#include "sfra_strategies.h"
+#include "plant_strategy.h"
+#include "compensator_strategy.h"
 
 #define PI_F    (3.14159265359f)
 

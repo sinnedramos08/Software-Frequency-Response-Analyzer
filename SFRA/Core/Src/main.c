@@ -36,6 +36,7 @@
 #include "dds.h"
 // From Strategies
 #include "compensator_strategy.h"
+#include "plant_strategy.h"
 #include "sfra_strategies.h"
 // From Alg
 #include "compensator.h"
@@ -99,7 +100,11 @@ int main(void)
 {
 
   /* USER CODE BEGIN 1 */
+#if TOGGLE_SWEEP_ILOOP_FS_100KHZ || TOGGLE_SWEEP_VLOOP_FS_6KHZ
 	g_active_strategy = &compensator_strategy;
+#elif TOGGLE_SWEEP_IPLANT_FS_100KHZ
+	g_active_strategy = &plant_strategy;
+#endif
 
   /* USER CODE END 1 */
 
@@ -131,20 +136,27 @@ int main(void)
 
   SFRA_Init();
   DDS_Init();
-  CompensatorStrategy_Init();
+
 
   HAL_DAC_Start(&hdac1, DAC_CHANNEL_1);
   HAL_DAC_Start(&hdac2, DAC_CHANNEL_1);
 
+#if TOGGLE_SWEEP_IPLANT_FS_100KHZ
+  HAL_ADCEx_InjectedStart_IT(&hadc2);
+  HAL_HRTIM_WaveformCountStart_IT(&hhrtim1, HRTIM_TIMERID_TIMER_A);
+  //HAL_HRTIM_WaveformOutputStart(&hhrtim1, HRTIM_OUTPUT_TA1);
+#endif
 
 #if TOGGLE_SWEEP_ILOOP_FS_100KHZ
   HAL_HRTIM_WaveformCountStart_IT(&hhrtim1, HRTIM_TIMERID_TIMER_A);
   HAL_HRTIM_WaveformOutputStart(&hhrtim1, HRTIM_OUTPUT_TA1|HRTIM_OUTPUT_TA2);	// For Debugging Purposes
+  CompensatorStrategy_Init();
 #endif
 
 #if TOGGLE_SWEEP_VLOOP_FS_6KHZ
   HAL_HRTIM_WaveformCountStart_IT(&hhrtim1, HRTIM_TIMERID_TIMER_D);
   HAL_HRTIM_WaveformOutputStart(&hhrtim1, HRTIM_OUTPUT_TD1|HRTIM_OUTPUT_TD2);	// For Debugging Purposes
+  CompensatorStrategy_Init();
 #endif
 
   /* USER CODE END 2 */
@@ -270,6 +282,15 @@ void SystemClock_Config(void)
 }
 
 /* USER CODE BEGIN 4 */
+void HAL_ADCEx_InjectedConvCpltCallback(ADC_HandleTypeDef *hadc)
+{
+	if(hadc->Instance == ADC2)
+	{
+		g_plant_variables.u32_isense_adc = HAL_ADCEx_InjectedGetValue(&hadc2, ADC_INJECTED_RANK_1);
+		g_plant_variables.u32_vout_adc = HAL_ADCEx_InjectedGetValue(&hadc2, ADC_INJECTED_RANK_2);
+	}
+
+}
 void HAL_HRTIM_CounterResetCallback(HRTIM_HandleTypeDef * hhrtim, uint32_t TimerIdx)
 {
 	if(g_active_strategy->timer_idx == TimerIdx)
@@ -278,7 +299,7 @@ void HAL_HRTIM_CounterResetCallback(HRTIM_HandleTypeDef * hhrtim, uint32_t Timer
 		g_active_strategy->ISR();
 		// Output DAC Signals
 		//HAL_DAC_SetValue(&hdac1, DAC_CHANNEL_1, DAC_ALIGN_12B_R, (uint16_t)(comp2p2z_iloop.f_ref+2048.0f));
-		HAL_DAC_SetValue(&hdac2, DAC_CHANNEL_1, DAC_ALIGN_12B_R,(uint16_t)(comp2p2z_iloop.f_ref+2048.0f));
+		//HAL_DAC_SetValue(&hdac2, DAC_CHANNEL_1, DAC_ALIGN_12B_R,(uint16_t)(comp2p2z_iloop.f_ref+2048.0f));
 	}
 }
 

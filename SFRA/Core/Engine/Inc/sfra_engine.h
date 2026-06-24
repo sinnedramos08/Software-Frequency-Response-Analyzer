@@ -11,6 +11,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include "compensator_strategy.h"
+#include "plant_strategy.h"
 
 // Structs and Enum
 typedef enum

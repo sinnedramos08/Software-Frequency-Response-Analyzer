@@ -17,6 +17,7 @@
 #include "dds.h"
 #include "iq.h"
 #include "compensator_strategy.h"
+#include "plant_strategy.h"
 
 // Macro
 #define PI_F    (3.14159265359f)

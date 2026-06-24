@@ -5,13 +5,16 @@
 
 # Add inputs and outputs from these tool invocations to the build variables 
 C_SRCS += \
-../Core/Strategies/Src/compensator_strategy.c 
+../Core/Strategies/Src/compensator_strategy.c \
+../Core/Strategies/Src/plant_strategy.c 
 
 OBJS += \
-./Core/Strategies/Src/compensator_strategy.o 
+./Core/Strategies/Src/compensator_strategy.o \
+./Core/Strategies/Src/plant_strategy.o 
 
 C_DEPS += \
-./Core/Strategies/Src/compensator_strategy.d 
+./Core/Strategies/Src/compensator_strategy.d \
+./Core/Strategies/Src/plant_strategy.d 
 
 
 # Each subdirectory must supply rules for building sources it contributes
@@ -21,7 +24,7 @@ Core/Strategies/Src/%.o Core/Strategies/Src/%.su Core/Strategies/Src/%.cyclo: ..
 clean: clean-Core-2f-Strategies-2f-Src
 
 clean-Core-2f-Strategies-2f-Src:
-	-$(RM) ./Core/Strategies/Src/compensator_strategy.cyclo ./Core/Strategies/Src/compensator_strategy.d ./Core/Strategies/Src/compensator_strategy.o ./Core/Strategies/Src/compensator_strategy.su
+	-$(RM) ./Core/Strategies/Src/compensator_strategy.cyclo ./Core/Strategies/Src/compensator_strategy.d ./Core/Strategies/Src/compensator_strategy.o ./Core/Strategies/Src/compensator_strategy.su ./Core/Strategies/Src/plant_strategy.cyclo ./Core/Strategies/Src/plant_strategy.d ./Core/Strategies/Src/plant_strategy.o ./Core/Strategies/Src/plant_strategy.su
 
 .PHONY: clean-Core-2f-Strategies-2f-Src
 
