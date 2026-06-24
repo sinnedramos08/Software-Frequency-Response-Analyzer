@@ -1,1 +1,11 @@
-../Core/Strategies/Src/plant_strategy.c:25:6:PlantStrategy_ISR	1
+../Core/Strategies/Src/plant_strategy.c:39:6:PlantStrategy_ISR	1
+../Core/Strategies/Src/plant_strategy.c:44:6:Plant_Run	10
+../Core/Strategies/Src/plant_strategy.c:86:13:Plant_StatePeriphInit_Handler	1
+../Core/Strategies/Src/plant_strategy.c:102:13:Plant_StateCheckSignals_Handler	4
+../Core/Strategies/Src/plant_strategy.c:127:13:Plant_StateRampUp_Handler	1
+../Core/Strategies/Src/plant_strategy.c:131:13:Plant_StateVerifyDcop_Handler	1
+../Core/Strategies/Src/plant_strategy.c:135:13:Plant_StateSfraInit_Handler	1
+../Core/Strategies/Src/plant_strategy.c:139:13:Plant_StateSweep_Handler	1
+../Core/Strategies/Src/plant_strategy.c:143:13:Plant_StateRampDown_Handler	1
+../Core/Strategies/Src/plant_strategy.c:147:13:Plant_StateDone_Handler	1
+../Core/Strategies/Src/plant_strategy.c:151:13:Plant_StateFault	1

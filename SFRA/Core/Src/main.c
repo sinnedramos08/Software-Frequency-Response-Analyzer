@@ -51,12 +51,6 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-#define KI_LOOP						(float)(1.0f / (G2 * GADC))
-#define GADC						(float)(1240.909091f)		//(1240.909091f)					//(1105)				//1240.909091f	//ADC Gain = 4095/3.3
-#define G2							(float)(0.066f) // (0.250f)				//Hall Sensor Gain = 250mV/A
-#define G3							(float)(0.00298923138f)//(0.002609997838f)//(0.00309512f)		//VIN Gain
-#define G3_RMS						(float)(G3 * 100.0f)
-
 #define SWITCHING_FREQ				(100000U)
 #define SYSTEM_CLOCK				(170000000U)
 #define HRTIM_CLOCK					(5440000000U)
