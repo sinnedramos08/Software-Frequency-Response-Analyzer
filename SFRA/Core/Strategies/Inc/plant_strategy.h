@@ -36,7 +36,7 @@
 #define GADC						(float)(1240.909091f)
 #define VOUT_MIN_VOLTS				(float)(5.0f)
 #define VOUT_VOLTS_TO_ADC(voltage)	((float)(voltage)*GADC*G4)
-#define ISENSE_OFFSET_ADC			(float)(1860.0f)	// 1.5V Offset -> 1860ADC
+#define ISENSE_OFFSET_ADC			(float)(1790.0f)	// 1.5V Offset -> 1860ADC
 #define ISENSE_MIN_AMPS				(float)(0.5f)
 #define ISENSE_AMPS_TO_ADC(amps)	(float)(amps*G2*GADC)
 #endif
@@ -81,6 +81,9 @@ typedef struct
     uint8_t		fault_reason;
 
     uint32_t 	u32_check_counter;
+
+    bool		b_vout_valid;
+    bool		b_isense_valid;
 
 } plant_strategy_variables_t;
 

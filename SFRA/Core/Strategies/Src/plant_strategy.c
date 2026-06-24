@@ -101,14 +101,13 @@ static void Plant_StatePeriphInit_Handler(void)
 
 static void Plant_StateCheckSignals_Handler(void)
 {
-	bool vout_valid;
-	bool isense_valid;
 
-	vout_valid = (g_plant_variables.u32_vout_adc > VOUT_VOLTS_TO_ADC(VOUT_MIN_VOLTS));
 
-	isense_valid = (abs((int32_t)g_plant_variables.u32_isense_adc - ISENSE_OFFSET_ADC)< ISENSE_AMPS_TO_ADC(ISENSE_MIN_AMPS));
+	g_plant_variables.b_vout_valid = (g_plant_variables.u32_vout_adc > VOUT_VOLTS_TO_ADC(VOUT_MIN_VOLTS));
 
-	if(vout_valid)//&& isense_valid)
+	g_plant_variables.b_isense_valid = (abs((int32_t)g_plant_variables.u32_isense_adc - ISENSE_OFFSET_ADC)< ISENSE_AMPS_TO_ADC(ISENSE_MIN_AMPS));
+
+	if(g_plant_variables.b_vout_valid&&g_plant_variables.b_isense_valid)//&& isense_valid)
 	{
 		g_plant_variables.u32_check_counter++;
 
