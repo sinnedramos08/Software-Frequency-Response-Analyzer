@@ -11,7 +11,7 @@
 // Includes
 #include <stdio.h>
 #include <stdint.h>
-
+#include <stdbool.h>
 
 // Macros
 
@@ -22,7 +22,7 @@
 #define DDS_LUT_SIZE      					8192
 #define DDS_LUT_SHIFT     					(DDS_PHASE_BITS - DDS_LUT_BITS)
 #define DDS_FULL_SCALE						(4294967296.0f)	// 2^32
-
+#define DDS_AMPLITUDE_RAMP_STEP_ADC			(0.001f)
 // Structs
 typedef struct{
 
@@ -33,6 +33,7 @@ typedef struct{
     uint32_t u32_LUT_index;
 
     float f_sine_amplitude;	// 1240.9090f
+    float f_sine_amplitude_target;
 
     float f_sine_out;		// Output sine: Amplitude*sinf(theta)
     float f_cosine_out;	// for cosine
@@ -53,4 +54,6 @@ void DDS_Init(void);
 void DDS_Sine_LUT_Init(void);
 void DDS_UpdateFrequency(float freq);
 void DDS_Update(void);
+void DDS_AmplitudeRamp(void);
+bool DDS_IsAmplitudeReached(void);
 #endif /* ENGINE_INC_DDS_H_ */

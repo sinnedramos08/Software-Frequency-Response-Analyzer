@@ -274,11 +274,11 @@ void HAL_HRTIM_CounterResetCallback(HRTIM_HandleTypeDef * hhrtim, uint32_t Timer
 {
 	if(g_active_strategy->timer_idx == TimerIdx)
 	{
-		SFRA_Run();
+
 		g_active_strategy->ISR();
 		// Output DAC Signals
-		HAL_DAC_SetValue(&hdac1, DAC_CHANNEL_1, DAC_ALIGN_12B_R, (uint16_t)(comp2p2z_iloop.f_ref+2048.0f));
-		HAL_DAC_SetValue(&hdac2, DAC_CHANNEL_1, DAC_ALIGN_12B_R,(uint16_t)(comp2p2z_iloop.f_out+2048.0f));
+		//HAL_DAC_SetValue(&hdac1, DAC_CHANNEL_1, DAC_ALIGN_12B_R, (uint16_t)(comp2p2z_iloop.f_ref+2048.0f));
+		HAL_DAC_SetValue(&hdac2, DAC_CHANNEL_1, DAC_ALIGN_12B_R,(uint16_t)(comp2p2z_iloop.f_ref+2048.0f));
 	}
 }
 

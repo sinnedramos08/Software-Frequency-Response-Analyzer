@@ -43,6 +43,7 @@ void CompensatorStrategy_Init(void)
 
 void CompensatorStrategy_ISR(void)
 {
+	SFRA_Run();
 	DDS_Update();
 
 	// Run Compensator 2p2z

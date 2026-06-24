@@ -27,9 +27,11 @@ sfra_t g_sfra;
 
 // Static function Prototypes
 static void SFRA_StateInit_Handler(void);
+static void SFRA_StateFadeIn_Handler(void);
 static void SFRA_StateSettling_Handler(void);
 static void SFRA_StateMeasuring_Handler(void);
 static void SFRA_StateCalculate_Handler(void);
+static void SFRA_StateFadeOut_Handler(void);
 static void SFRA_StateNextFreq_Handler(void);
 static void SFRA_StateDone_Handler(void);
 
@@ -40,6 +42,9 @@ void SFRA_Run(void)
 		case SFRA_STATE_INIT:
 			SFRA_StateInit_Handler();
 			break;
+        case SFRA_STATE_FADE_IN:
+        	SFRA_StateFadeIn_Handler();
+        	break;
         case SFRA_STATE_SETTLING:
 			SFRA_StateSettling_Handler();
             break;
@@ -49,6 +54,9 @@ void SFRA_Run(void)
         case SFRA_STATE_CALCULATE:
         	SFRA_StateCalculate_Handler();
             break;
+        case SFRA_STATE_FADE_OUT:
+        	SFRA_StateFadeOut_Handler();
+        	break;
         case SFRA_STATE_NEXT_FREQ:
         	SFRA_StateNextFreq_Handler();
             break;
@@ -70,8 +78,18 @@ static void SFRA_StateInit_Handler(void)
 	g_sfra.freq_index = 0;
 	DDS_UpdateFrequency(g_sfra.freq_table[0]);
 	g_sfra.settle_counter = 0;
-	g_sfra.state = SFRA_STATE_SETTLING;
+	g_sfra.state = SFRA_STATE_FADE_IN;
 
+}
+
+static void SFRA_StateFadeIn_Handler(void)
+{
+	DDS_AmplitudeRamp();
+    if(DDS_IsAmplitudeReached())
+    {
+        g_sfra.settle_counter = 0;
+        g_sfra.state = SFRA_STATE_SETTLING;
+    }
 }
 
 static void SFRA_StateSettling_Handler(void)
@@ -128,8 +146,21 @@ static void SFRA_StateCalculate_Handler(void)
 	g_sfra.phase_deg[g_sfra.freq_index] = phase_deg;
 
 	g_sfra.b_result_ready_flag=true;
-    g_sfra.state = SFRA_STATE_NEXT_FREQ;
+    //g_sfra.state = SFRA_STATE_NEXT_FREQ;
+	g_sfra.state = SFRA_STATE_FADE_OUT;
 }
+
+static void SFRA_StateFadeOut_Handler(void)
+{
+	g_dds.f_sine_amplitude_target = 0.0f;
+	DDS_AmplitudeRamp();
+    if(DDS_IsAmplitudeReached())
+    {
+        g_sfra.settle_counter = 0;
+        g_sfra.state = SFRA_STATE_NEXT_FREQ;
+    }
+}
+
 
 static void SFRA_StateNextFreq_Handler(void)
 {
@@ -143,12 +174,11 @@ static void SFRA_StateNextFreq_Handler(void)
     }
     else
     {
-        DDS_UpdateFrequency(
-            g_sfra.freq_table[g_sfra.freq_index]);
-
+        DDS_UpdateFrequency(g_sfra.freq_table[g_sfra.freq_index]);
+        g_dds.f_sine_amplitude = 0.0f;
+        g_dds.f_sine_amplitude_target = SINE_INJECTED_AMPLITUDE_ADC;
         g_sfra.settle_counter = 0;
-
-        g_sfra.state = SFRA_STATE_SETTLING;
+        g_sfra.state = SFRA_STATE_FADE_IN;
     }
 
 }

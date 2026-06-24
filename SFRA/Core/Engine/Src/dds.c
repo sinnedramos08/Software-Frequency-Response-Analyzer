@@ -6,6 +6,7 @@
  */
 #include <stdio.h>
 #include <math.h>
+#include <stdbool.h>
 #include "dds.h"
 #include "sfra_engine.h"
 
@@ -16,7 +17,7 @@ dds_t g_dds;
 
 void DDS_Init(void)
 {
-	g_dds.f_sine_amplitude = SINE_INJECTED_AMPLITUDE_ADC;	// For 1V Amplitude Signal in Oscilloscope
+	g_dds.f_sine_amplitude_target = SINE_INJECTED_AMPLITUDE_ADC;	// For 1V Amplitude Signal in Oscilloscope
 	DDS_Sine_LUT_Init();
 
 }
@@ -55,4 +56,37 @@ void DDS_Update(void)
 	// Create a reference signal sine and cosine
 	g_dds.f_sine_ref = g_dds.f_sine_lut[g_dds.u32_LUT_index];
 	g_dds.f_cosine_ref = g_dds.f_sine_lut[(g_dds.u32_LUT_index + 2048) & 0x1FFF];
+}
+
+void DDS_AmplitudeRamp(void)
+{
+	const float step = DDS_AMPLITUDE_RAMP_STEP_ADC;
+	//HAL_Delay(10);
+
+	// For Fade in
+	if (g_dds.f_sine_amplitude < g_dds.f_sine_amplitude_target)
+	{
+		g_dds.f_sine_amplitude +=step;
+
+		if(g_dds.f_sine_amplitude > g_dds.f_sine_amplitude_target)
+		{
+			g_dds.f_sine_amplitude = g_dds.f_sine_amplitude_target;
+		}
+	}
+
+	// For Fade Out
+	else if(g_dds.f_sine_amplitude > g_dds.f_sine_amplitude_target)
+	{
+		g_dds.f_sine_amplitude -= step;
+
+	 	if(g_dds.f_sine_amplitude < g_dds.f_sine_amplitude_target)
+	 	{
+	    	g_dds.f_sine_amplitude =g_dds.f_sine_amplitude_target;
+	    }
+	}
+}
+
+bool DDS_IsAmplitudeReached(void)
+{
+    return (g_dds.f_sine_amplitude ==g_dds.f_sine_amplitude_target);
 }
