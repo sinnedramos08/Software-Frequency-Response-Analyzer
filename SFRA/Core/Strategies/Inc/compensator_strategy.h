@@ -22,6 +22,7 @@
 #define FLOAT_V_TO_ADC(voltage) 			((float)(voltage) * 4095.0f / 3.3f)
 #define SINE_INJECTED_AMPLITUDE_VOLTS		(1.0f)	// Amplitude of Injected Signal in Volts (0.5V to 1V)
 #define SINE_INJECTED_AMPLITUDE_ADC			FLOAT_V_TO_ADC(SINE_INJECTED_AMPLITUDE_VOLTS)
+#define DDS_AMPLITUDE_RAMP_STEP_ADC			(0.002f)
 
 #elif TOGGLE_SWEEP_VLOOP_FS_6KHZ
 #define FLOAT_SFRA_FS_HZ                 	(6000.0f)
@@ -31,6 +32,7 @@
 #define FLOAT_V_TO_ADC(voltage) 			((float)(voltage) * 4095.0f / 3.3f)
 #define SINE_INJECTED_AMPLITUDE_VOLTS		(1.0f)	// Amplitude of Injected Signal in Volts (0.5V to 1V)
 #define SINE_INJECTED_AMPLITUDE_ADC			FLOAT_V_TO_ADC(SINE_INJECTED_AMPLITUDE_VOLTS)
+#define DDS_AMPLITUDE_RAMP_STEP_ADC			(1.0f)
 #endif
 
 // For defining the frequencies in sweep

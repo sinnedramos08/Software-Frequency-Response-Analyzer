@@ -65,7 +65,7 @@ main-build: SFRA.elf secondary-outputs
 
 # Tool invocations
 SFRA.elf SFRA.map: $(OBJS) $(USER_OBJS) C:\Users\DRamos\OneDrive\ -\ Power\ Integrations\Documents\2.\ Firmware\Software-Frequency-Response-Analyzer\SFRA\STM32G474RETX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-gcc -o "SFRA.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"C:\Users\DRamos\OneDrive - Power Integrations\Documents\2. Firmware\Software-Frequency-Response-Analyzer\SFRA\STM32G474RETX_FLASH.ld" --specs=nosys.specs -Wl,-Map="SFRA.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -u _printf_float -Wl,--start-group -lc -lm -Wl,--end-group
+	arm-none-eabi-gcc -o "SFRA.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"C:\Users\DRamos\OneDrive - Power Integrations\Documents\2. Firmware\Software-Frequency-Response-Analyzer\SFRA\STM32G474RETX_FLASH.ld" --specs=nosys.specs -Wl,-Map="SFRA.map" -Wl,--gc-sections -static -u _printf_float --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -u _printf_float -Wl,--start-group -lc -lm -Wl,--end-group
 	@echo 'Finished building target: $@'
 	@echo ' '
 

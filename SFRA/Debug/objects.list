@@ -12,6 +12,7 @@
 "./Core/Src/syscalls.o"
 "./Core/Src/sysmem.o"
 "./Core/Src/system_stm32g4xx.o"
+"./Core/Src/usart.o"
 "./Core/Startup/startup_stm32g474retx.o"
 "./Core/Strategies/Src/compensator_strategy.o"
 "./Core/Strategies/Src/plant_strategy.o"

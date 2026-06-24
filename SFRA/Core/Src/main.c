@@ -17,11 +17,11 @@
   */
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
-
 #include "main.h"
 #include "adc.h"
 #include "dac.h"
 #include "hrtim.h"
+#include "usart.h"
 #include "gpio.h"
 
 /* Private includes ----------------------------------------------------------*/
@@ -130,6 +130,7 @@ int main(void)
   MX_DAC1_Init();
   MX_DAC2_Init();
   MX_ADC2_Init();
+  MX_UART4_Init();
   /* USER CODE BEGIN 2 */
   compensator_2P2Z_Init(&comp2p2z_iloop, 0.0f, A1_I, A2_I, B0_I, B1_I, B2_I, 1);
   compensator_2P2Z_Init(&comp2p2z_vloop, 0.0f, A1_V, A2_V, B0_V, B1_V, B2_V, 1);
