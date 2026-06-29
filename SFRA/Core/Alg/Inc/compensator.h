@@ -21,11 +21,11 @@
 #define USE_120VAC_380VDC_PLD	(1U)
 
 #if USE_120VAC_380VDC_PLD
-#define B0_I (+0.0221447567575377)
-#define B1_I (+0.0002257971094560)
-#define B2_I (-0.0219189596480817)
-#define A1_I (+0.7779690592966855)
-#define A2_I (+0.2220309407033146)
+#define B0_I (+11.998)
+#define B1_I (+1.1547)
+#define B2_I (-10.843)
+#define A1_I (+0.76879)
+#define A2_I (+0.22348)
 
 #define B0_V (+0.2476368622951489)
 #define B1_V (+0.0006598251225833)

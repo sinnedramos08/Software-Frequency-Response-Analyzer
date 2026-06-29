@@ -22,7 +22,7 @@
 #define DDS_LUT_SIZE      					8192
 #define DDS_LUT_SHIFT     					(DDS_PHASE_BITS - DDS_LUT_BITS)
 #define DDS_FULL_SCALE						(4294967296.0f)	// 2^32
-#define DDS_AMPLITUDE_RAMP_STEP_ADC			(0.002f)
+#define DDS_AMPLITUDE_RAMP_STEP_ADC			(1.0f)
 // Structs
 typedef struct{
 
