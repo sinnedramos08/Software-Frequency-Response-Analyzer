@@ -35,10 +35,16 @@
 #define G4							(float)(VOUT_R2_VALUE / (VOUT_R1_VALUE + VOUT_R2_VALUE))
 #define GADC						(float)(1240.909091f)
 #define VOUT_MIN_VOLTS				(float)(5.0f)
+#define VOUT_TARGET_VOLTS			(float)(40.0f)
 #define VOUT_VOLTS_TO_ADC(voltage)	((float)(voltage)*GADC*G4)
 #define ISENSE_OFFSET_ADC			(float)(1790.0f)	// 1.5V Offset -> 1860ADC
 #define ISENSE_MIN_AMPS				(float)(0.5f)
 #define ISENSE_AMPS_TO_ADC(amps)	(float)(amps*G2*GADC)
+
+#define DUTY_RAMP_INC_TICKS			(float)(0.01f)	// How much step
+#define PWM_MAX_DUTY_TICKS			(float)(0.9f*54400.0f)
+#define PWM_MIN_DUTY_TICKS			(float)(0.05f*54400.0f)
+
 #endif
 
 // For defining the frequencies in sweep
@@ -71,12 +77,18 @@ typedef struct
     plant_state_t state;
 
     uint32_t 	u32_pwm_duty;
+    uint32_t	u32_pwm_duty_adc_trig;
     float		f_pwm_duty;
+    float		f_pwm_duty_ramp_step;
     uint32_t 	u32_duty_dc_op_latch;
+
     uint32_t 	u32_vout_adc;
     uint32_t 	u32_isense_adc;
+
     uint32_t 	u32_verify_counter;
     uint64_t 	u64_vout_verify_acc;
+
+
     bool 		b_fault_flag;
     uint8_t		fault_reason;
 

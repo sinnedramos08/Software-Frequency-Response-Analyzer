@@ -140,6 +140,7 @@ int main(void)
   HAL_ADCEx_InjectedStart_IT(&hadc2);
   HAL_HRTIM_WaveformCountStart_IT(&hhrtim1, HRTIM_TIMERID_TIMER_A);
   //HAL_HRTIM_WaveformOutputStart(&hhrtim1, HRTIM_OUTPUT_TA1);
+
 #endif
 
 #if TOGGLE_SWEEP_ILOOP_FS_100KHZ
@@ -281,8 +282,8 @@ void HAL_ADCEx_InjectedConvCpltCallback(ADC_HandleTypeDef *hadc)
 {
 	if(hadc->Instance == ADC2)
 	{
-		g_plant_variables.u32_isense_adc = HAL_ADCEx_InjectedGetValue(&hadc2, ADC_INJECTED_RANK_1);
-		g_plant_variables.u32_vout_adc = HAL_ADCEx_InjectedGetValue(&hadc2, ADC_INJECTED_RANK_2);
+		g_plant_variables.u32_isense_adc = ADC2->JDR1;//HAL_ADCEx_InjectedGetValue(&hadc2, ADC_INJECTED_RANK_1);
+		g_plant_variables.u32_vout_adc = ADC2->JDR2;//HAL_ADCEx_InjectedGetValue(&hadc2, ADC_INJECTED_RANK_2);
 	}
 
 }

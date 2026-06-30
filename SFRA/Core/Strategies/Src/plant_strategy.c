@@ -33,8 +33,9 @@ static void Plant_StateSfraInit_Handler(void);
 static void Plant_StateSweep_Handler(void);
 static void Plant_StateRampDown_Handler(void);
 static void Plant_StateDone_Handler(void);
-static void Plant_StateFault(void);
+static void Plant_StateFault_Handler(void);
 
+static void Plant_SetPWMDuty(uint32_t duty);
 
 void PlantStrategy_ISR(void)
 {
@@ -78,7 +79,7 @@ void Plant_Run(void)
             break;
 
         case PLANT_STATE_FAULT:
-            Plant_StateFault();
+            Plant_StateFault_Handler();
             break;
     }
 }
@@ -87,9 +88,14 @@ static void Plant_StatePeriphInit_Handler(void)
 {
 	HAL_GPIO_WritePin(RELAY_GPIO_GPIO_Port, RELAY_GPIO_Pin, GPIO_PIN_SET);
 	//Ensure no PWM
-	g_plant_variables.u32_pwm_duty = 27200;
-	__HAL_HRTIM_SETCOMPARE(&hhrtim1, HRTIM_TIMERINDEX_TIMER_A, HRTIM_COMPAREUNIT_1, g_plant_variables.u32_pwm_duty);
-	__HAL_HRTIM_SETCOMPARE(&hhrtim1, HRTIM_TIMERINDEX_TIMER_A, HRTIM_COMPAREUNIT_2, g_plant_variables.u32_pwm_duty>>1);
+	g_plant_variables.f_pwm_duty = 0.0f;
+	g_plant_variables.f_pwm_duty_ramp_step = DUTY_RAMP_INC_TICKS;
+
+	// Need to Set value to 27200 for HRTIM Triggered ADC
+	g_plant_variables.u32_pwm_duty = 0;
+	__HAL_HRTIM_SETCOMPARE(&hhrtim1, HRTIM_TIMERINDEX_TIMER_A, HRTIM_COMPAREUNIT_1, 0);
+	__HAL_HRTIM_SETCOMPARE(&hhrtim1, HRTIM_TIMERINDEX_TIMER_A, HRTIM_COMPAREUNIT_2, 13600);
+	HAL_HRTIM_WaveformOutputStart(&hhrtim1, HRTIM_OUTPUT_TA1);
 
 
 	g_plant_variables.u32_verify_counter = 0;
@@ -104,15 +110,18 @@ static void Plant_StateCheckSignals_Handler(void)
 
 
 	g_plant_variables.b_vout_valid = (g_plant_variables.u32_vout_adc > VOUT_VOLTS_TO_ADC(VOUT_MIN_VOLTS));
-
 	g_plant_variables.b_isense_valid = (abs((int32_t)g_plant_variables.u32_isense_adc - ISENSE_OFFSET_ADC)< ISENSE_AMPS_TO_ADC(ISENSE_MIN_AMPS));
 
-	if(g_plant_variables.b_vout_valid&&g_plant_variables.b_isense_valid)//&& isense_valid)
+	if(g_plant_variables.b_vout_valid && g_plant_variables.b_isense_valid)
 	{
 		g_plant_variables.u32_check_counter++;
 
 		if(g_plant_variables.u32_check_counter > 1000)
 		{
+			// Need to Set value to 27200 for HRTIM Triggered ADC
+			g_plant_variables.u32_pwm_duty = 0;
+			Plant_SetPWMDuty(g_plant_variables.u32_pwm_duty);
+
 			g_plant_variables.state = PLANT_STATE_RAMP_UP;
 		}
 	}
@@ -125,6 +134,32 @@ static void Plant_StateCheckSignals_Handler(void)
 
 static void Plant_StateRampUp_Handler(void)
 {
+    g_plant_variables.f_pwm_duty += g_plant_variables.f_pwm_duty_ramp_step;
+
+    if(g_plant_variables.f_pwm_duty > PWM_MAX_DUTY_TICKS)
+    {
+        g_plant_variables.state = PLANT_STATE_FAULT;
+        return;
+    }
+#if 0
+    if (g_plant_variables.u32_vout_adc >=VOUT_VOLTS_TO_ADC(VOUT_TARGET_VOLTS))
+    {
+    	g_plant_variables.u32_duty_dc_op_latch = g_plant_variables.u32_pwm_duty;
+    	g_plant_variables.state = PLANT_STATE_VERIFY_DCOP;
+
+    }
+#else
+    if (g_plant_variables.f_pwm_duty >=37200.0f)
+    {
+    	g_plant_variables.u32_duty_dc_op_latch = g_plant_variables.u32_pwm_duty;
+    	g_plant_variables.state = PLANT_STATE_VERIFY_DCOP;
+
+    }
+#endif
+
+    g_plant_variables.u32_pwm_duty = (uint32_t)g_plant_variables.f_pwm_duty;
+    Plant_SetPWMDuty(g_plant_variables.u32_pwm_duty);
+
 
 }
 static void Plant_StateVerifyDcop_Handler(void)
@@ -147,7 +182,14 @@ static void Plant_StateDone_Handler(void)
 {
 
 }
-static void Plant_StateFault(void)
+static void Plant_StateFault_Handler(void)
 {
+	HAL_HRTIM_WaveformOutputStop(&hhrtim1, HRTIM_OUTPUT_TA1);
 
+}
+
+// Helper Function
+static void Plant_SetPWMDuty(uint32_t duty){
+	__HAL_HRTIM_SETCOMPARE(&hhrtim1, HRTIM_TIMERINDEX_TIMER_A, HRTIM_COMPAREUNIT_1, duty);
+	__HAL_HRTIM_SETCOMPARE(&hhrtim1, HRTIM_TIMERINDEX_TIMER_A, HRTIM_COMPAREUNIT_2, duty>>1U);
 }
