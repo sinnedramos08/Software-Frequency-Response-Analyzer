@@ -7,23 +7,23 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   CONTENTS, ALLOC, LOAD, READONLY, DATA
   1 .text         0000c3b8  080001e0  080001e0  000011e0  2**4
                   CONTENTS, ALLOC, LOAD, READONLY, CODE
-  2 .rodata       0000090c  0800c598  0800c598  0000d598  2**3
+  2 .rodata       00000914  0800c598  0800c598  0000d598  2**3
                   CONTENTS, ALLOC, LOAD, READONLY, DATA
-  3 .ARM.extab    00000000  0800cea4  0800cea4  0000e204  2**0
+  3 .ARM.extab    00000000  0800ceac  0800ceac  0000e204  2**0
                   CONTENTS, READONLY
-  4 .ARM          00000008  0800cea4  0800cea4  0000dea4  2**2
+  4 .ARM          00000008  0800ceac  0800ceac  0000deac  2**2
                   CONTENTS, ALLOC, LOAD, READONLY, DATA
-  5 .preinit_array 00000000  0800ceac  0800ceac  0000e204  2**0
+  5 .preinit_array 00000000  0800ceb4  0800ceb4  0000e204  2**0
                   CONTENTS, ALLOC, LOAD, DATA
-  6 .init_array   00000004  0800ceac  0800ceac  0000deac  2**2
+  6 .init_array   00000004  0800ceb4  0800ceb4  0000deb4  2**2
                   CONTENTS, ALLOC, LOAD, READONLY, DATA
-  7 .fini_array   00000004  0800ceb0  0800ceb0  0000deb0  2**2
+  7 .fini_array   00000004  0800ceb8  0800ceb8  0000deb8  2**2
                   CONTENTS, ALLOC, LOAD, READONLY, DATA
-  8 .data         00000204  20000000  0800ceb4  0000e000  2**2
+  8 .data         00000204  20000000  0800cebc  0000e000  2**2
                   CONTENTS, ALLOC, LOAD, DATA
-  9 .bss          000086f0  20000208  0800d0b8  0000e208  2**3
+  9 .bss          000086f0  20000208  0800d0c0  0000e208  2**3
                   ALLOC
- 10 ._user_heap_stack 00000600  200088f8  0800d0b8  0000e8f8  2**0
+ 10 ._user_heap_stack 00000600  200088f8  0800d0c0  0000e8f8  2**0
                   ALLOC
  11 .ARM.attributes 00000030  00000000  00000000  0000e204  2**0
                   CONTENTS, READONLY
@@ -37,15 +37,15 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   CONTENTS, READONLY, DEBUGGING, OCTETS
  16 .debug_macro  0002ce78  00000000  00000000  00030061  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 17 .debug_line   0001cfae  00000000  00000000  0005ced9  2**0
+ 17 .debug_line   0001d124  00000000  00000000  0005ced9  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 18 .debug_str    00127460  00000000  00000000  00079e87  2**0
+ 18 .debug_str    00127442  00000000  00000000  00079ffd  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 19 .comment      00000043  00000000  00000000  001a12e7  2**0
+ 19 .comment      00000043  00000000  00000000  001a143f  2**0
                   CONTENTS, READONLY
- 20 .debug_frame  00007028  00000000  00000000  001a132c  2**2
+ 20 .debug_frame  00007028  00000000  00000000  001a1484  2**2
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 21 .debug_line_str 00000061  00000000  00000000  001a8354  2**0
+ 21 .debug_line_str 0000009c  00000000  00000000  001a84ac  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
 
 Disassembly of section .text:
@@ -4073,23 +4073,23 @@ int main(void)
  8002262:	f007 f9d5 	bl	8009610 <puts>
 	if(g_sfra.b_start_flag){
  8002266:	e73d      	b.n	80020e4 <main+0xdc>
- 8002268:	8682ab43 	.word	0x8682ab43
- 800226c:	3fcc6b82 	.word	0x3fcc6b82
- 8002270:	5e5f5530 	.word	0x5e5f5530
- 8002274:	3fe8e51f 	.word	0x3fe8e51f
- 8002278:	c524f68d 	.word	0xc524f68d
- 800227c:	c02d20d0 	.word	0xc02d20d0
- 8002280:	c7a7f61c 	.word	0xc7a7f61c
- 8002284:	3fc33439 	.word	0x3fc33439
- 8002288:	ac439666 	.word	0xac439666
- 800228c:	402d6da1 	.word	0x402d6da1
+ 8002268:	51c83ab4 	.word	0x51c83ab4
+ 800226c:	bf73c9e7 	.word	0xbf73c9e7
+ 8002270:	b9a1ffd9 	.word	0xb9a1ffd9
+ 8002274:	3fefb291 	.word	0x3fefb291
+ 8002278:	21a0952f 	.word	0x21a0952f
+ 800227c:	c022362c 	.word	0xc022362c
+ 8002280:	1a4e3e2f 	.word	0x1a4e3e2f
+ 8002284:	3fe6da68 	.word	0x3fe6da68
+ 8002288:	a3457913 	.word	0xa3457913
+ 800228c:	4023a3d2 	.word	0x4023a3d2
  8002290:	200086d0 	.word	0x200086d0
- 8002294:	0800c704 	.word	0x0800c704
- 8002298:	c1690686 	.word	0xc1690686
- 800229c:	3e19a1ce 	.word	0x3e19a1ce
- 80022a0:	416b6d0d 	.word	0x416b6d0d
- 80022a4:	3e635c14 	.word	0x3e635c14
- 80022a8:	3f4728fb 	.word	0x3f4728fb
+ 8002294:	0800c70c 	.word	0x0800c70c
+ 8002298:	c111b161 	.word	0xc111b161
+ 800229c:	3f36d341 	.word	0x3f36d341
+ 80022a0:	411d1e95 	.word	0x411d1e95
+ 80022a4:	bb9e4f3b 	.word	0xbb9e4f3b
+ 80022a8:	3f7d948e 	.word	0x3f7d948e
  80022ac:	00000000 	.word	0x00000000
  80022b0:	20000224 	.word	0x20000224
  80022b4:	be7ce78c 	.word	0xbe7ce78c
@@ -4108,15 +4108,15 @@ int main(void)
  80022e8:	0800c5cc 	.word	0x0800c5cc
  80022ec:	0800c5e0 	.word	0x0800c5e0
  80022f0:	0800c5fc 	.word	0x0800c5fc
- 80022f4:	0800c60c 	.word	0x0800c60c
- 80022f8:	0800c61c 	.word	0x0800c61c
- 80022fc:	0800c62c 	.word	0x0800c62c
- 8002300:	0800c64c 	.word	0x0800c64c
- 8002304:	0800c684 	.word	0x0800c684
- 8002308:	0800c6a8 	.word	0x0800c6a8
+ 80022f4:	0800c614 	.word	0x0800c614
+ 80022f8:	0800c624 	.word	0x0800c624
+ 80022fc:	0800c634 	.word	0x0800c634
+ 8002300:	0800c654 	.word	0x0800c654
+ 8002304:	0800c68c 	.word	0x0800c68c
+ 8002308:	0800c6b0 	.word	0x0800c6b0
  800230c:	447a0000 	.word	0x447a0000
- 8002310:	0800c6b4 	.word	0x0800c6b4
- 8002314:	0800c6d0 	.word	0x0800c6d0
+ 8002310:	0800c6bc 	.word	0x0800c6bc
+ 8002314:	0800c6d8 	.word	0x0800c6d8
 
 08002318 <SystemClock_Config>:
 /**
@@ -4984,49 +4984,110 @@ void SystemInit(void)
  80026cc:	e000ed00 	.word	0xe000ed00
 
 080026d0 <Reset_Handler>:
+
+    .section	.text.Reset_Handler
+	.weak	Reset_Handler
+	.type	Reset_Handler, %function
+Reset_Handler:
+  ldr   r0, =_estack
  80026d0:	480d      	ldr	r0, [pc, #52]	@ (8002708 <LoopForever+0x2>)
+  mov   sp, r0          /* set stack pointer */
  80026d2:	4685      	mov	sp, r0
+
+/* Call the clock system initialization function.*/
+    bl  SystemInit
  80026d4:	f7ff ffea 	bl	80026ac <SystemInit>
+
+/* Copy the data segment initializers from flash to SRAM */
+  ldr r0, =_sdata
  80026d8:	480c      	ldr	r0, [pc, #48]	@ (800270c <LoopForever+0x6>)
+  ldr r1, =_edata
  80026da:	490d      	ldr	r1, [pc, #52]	@ (8002710 <LoopForever+0xa>)
+  ldr r2, =_sidata
  80026dc:	4a0d      	ldr	r2, [pc, #52]	@ (8002714 <LoopForever+0xe>)
+  movs r3, #0
  80026de:	2300      	movs	r3, #0
+  b	LoopCopyDataInit
  80026e0:	e002      	b.n	80026e8 <LoopCopyDataInit>
 
 080026e2 <CopyDataInit>:
+
+CopyDataInit:
+  ldr r4, [r2, r3]
  80026e2:	58d4      	ldr	r4, [r2, r3]
+  str r4, [r0, r3]
  80026e4:	50c4      	str	r4, [r0, r3]
+  adds r3, r3, #4
  80026e6:	3304      	adds	r3, #4
 
 080026e8 <LoopCopyDataInit>:
+
+LoopCopyDataInit:
+  adds r4, r0, r3
  80026e8:	18c4      	adds	r4, r0, r3
+  cmp r4, r1
  80026ea:	428c      	cmp	r4, r1
+  bcc CopyDataInit
  80026ec:	d3f9      	bcc.n	80026e2 <CopyDataInit>
+  
+/* Zero fill the bss segment. */
+  ldr r2, =_sbss
  80026ee:	4a0a      	ldr	r2, [pc, #40]	@ (8002718 <LoopForever+0x12>)
+  ldr r4, =_ebss
  80026f0:	4c0a      	ldr	r4, [pc, #40]	@ (800271c <LoopForever+0x16>)
+  movs r3, #0
  80026f2:	2300      	movs	r3, #0
+  b LoopFillZerobss
  80026f4:	e001      	b.n	80026fa <LoopFillZerobss>
 
 080026f6 <FillZerobss>:
+
+FillZerobss:
+  str  r3, [r2]
  80026f6:	6013      	str	r3, [r2, #0]
+  adds r2, r2, #4
  80026f8:	3204      	adds	r2, #4
 
 080026fa <LoopFillZerobss>:
+
+LoopFillZerobss:
+  cmp r2, r4
  80026fa:	42a2      	cmp	r2, r4
+  bcc FillZerobss
  80026fc:	d3fb      	bcc.n	80026f6 <FillZerobss>
+
+/* Call static constructors */
+    bl __libc_init_array
  80026fe:	f007 f8bf 	bl	8009880 <__libc_init_array>
+/* Call the application's entry point.*/
+	bl	main
  8002702:	f7ff fc81 	bl	8002008 <main>
 
 08002706 <LoopForever>:
+
+LoopForever:
+    b LoopForever
  8002706:	e7fe      	b.n	8002706 <LoopForever>
+  ldr   r0, =_estack
  8002708:	20020000 	.word	0x20020000
+  ldr r0, =_sdata
  800270c:	20000000 	.word	0x20000000
+  ldr r1, =_edata
  8002710:	20000204 	.word	0x20000204
- 8002714:	0800ceb4 	.word	0x0800ceb4
+  ldr r2, =_sidata
+ 8002714:	0800cebc 	.word	0x0800cebc
+  ldr r2, =_sbss
  8002718:	20000208 	.word	0x20000208
+  ldr r4, =_ebss
  800271c:	200088f8 	.word	0x200088f8
 
 08002720 <ADC3_IRQHandler>:
+ * @retval : None
+*/
+    .section	.text.Default_Handler,"ax",%progbits
+Default_Handler:
+Infinite_Loop:
+	b	Infinite_Loop
  8002720:	e7fe      	b.n	8002720 <ADC3_IRQHandler>
 
 08002722 <compensator_2P2Z_Update>:
@@ -5421,7 +5482,7 @@ int32_t BSP_PB_Init(Button_TypeDef Button, ButtonMode_TypeDef ButtonMode)
  80029bc:	40021000 	.word	0x40021000
  80029c0:	20000008 	.word	0x20000008
  80029c4:	20008708 	.word	0x20008708
- 80029c8:	0800c70c 	.word	0x0800c70c
+ 80029c8:	0800c714 	.word	0x0800c714
  80029cc:	20000010 	.word	0x20000010
  80029d0:	20000014 	.word	0x20000014
 
@@ -19110,7 +19171,7 @@ HAL_StatusTypeDef HAL_RCC_ClockConfig(const RCC_ClkInitTypeDef  *RCC_ClkInitStru
  8007880:	40022000 	.word	0x40022000
  8007884:	40021000 	.word	0x40021000
  8007888:	04c4b400 	.word	0x04c4b400
- 800788c:	0800c6ec 	.word	0x0800c6ec
+ 800788c:	0800c6f4 	.word	0x0800c6f4
  8007890:	20000000 	.word	0x20000000
  8007894:	20000018 	.word	0x20000018
 
@@ -19291,7 +19352,7 @@ uint32_t HAL_RCC_GetPCLK1Freq(void)
  8007994:	4618      	mov	r0, r3
  8007996:	bd80      	pop	{r7, pc}
  8007998:	40021000 	.word	0x40021000
- 800799c:	0800c6fc 	.word	0x0800c6fc
+ 800799c:	0800c704 	.word	0x0800c704
 
 080079a0 <HAL_RCC_GetPCLK2Freq>:
   * @note   Each time PCLK2 changes, this function must be called to update the
@@ -19318,7 +19379,7 @@ uint32_t HAL_RCC_GetPCLK2Freq(void)
  80079c0:	4618      	mov	r0, r3
  80079c2:	bd80      	pop	{r7, pc}
  80079c4:	40021000 	.word	0x40021000
- 80079c8:	0800c6fc 	.word	0x0800c6fc
+ 80079c8:	0800c704 	.word	0x0800c704
 
 080079cc <RCC_GetSysClockFreqFromPLLSource>:
 /**
@@ -21352,7 +21413,7 @@ HAL_StatusTypeDef UART_SetConfig(UART_HandleTypeDef *huart)
  8008696:	bf00      	nop
  8008698:	40008000 	.word	0x40008000
  800869c:	00f42400 	.word	0x00f42400
- 80086a0:	0800c710 	.word	0x0800c710
+ 80086a0:	0800c718 	.word	0x0800c718
       }
       else
       {
@@ -22543,11 +22604,11 @@ static void UART_EndRxTransfer(UART_HandleTypeDef *huart)
  8008f14:	e7ee      	b.n	8008ef4 <_printf_float+0x2a4>
  8008f16:	bf00      	nop
  8008f18:	7fefffff 	.word	0x7fefffff
- 8008f1c:	0800c72c 	.word	0x0800c72c
- 8008f20:	0800c728 	.word	0x0800c728
- 8008f24:	0800c734 	.word	0x0800c734
- 8008f28:	0800c730 	.word	0x0800c730
- 8008f2c:	0800c738 	.word	0x0800c738
+ 8008f1c:	0800c734 	.word	0x0800c734
+ 8008f20:	0800c730 	.word	0x0800c730
+ 8008f24:	0800c73c 	.word	0x0800c73c
+ 8008f28:	0800c738 	.word	0x0800c738
+ 8008f2c:	0800c740 	.word	0x0800c740
  8008f30:	6da3      	ldr	r3, [r4, #88]	@ 0x58
  8008f32:	f8dd a028 	ldr.w	sl, [sp, #40]	@ 0x28
  8008f36:	4553      	cmp	r3, sl
@@ -23025,8 +23086,8 @@ static void UART_EndRxTransfer(UART_HandleTypeDef *huart)
  80093ac:	2500      	movs	r5, #0
  80093ae:	f104 0619 	add.w	r6, r4, #25
  80093b2:	e7f5      	b.n	80093a0 <_printf_i+0x220>
- 80093b4:	0800c73a 	.word	0x0800c73a
- 80093b8:	0800c74b 	.word	0x0800c74b
+ 80093b4:	0800c742 	.word	0x0800c742
+ 80093b8:	0800c753 	.word	0x0800c753
 
 080093bc <std>:
  80093bc:	2300      	movs	r3, #0
@@ -23604,10 +23665,10 @@ static void UART_EndRxTransfer(UART_HandleTypeDef *huart)
  80098b2:	4798      	blx	r3
  80098b4:	3601      	adds	r6, #1
  80098b6:	e7f2      	b.n	800989e <__libc_init_array+0x1e>
- 80098b8:	0800ceac 	.word	0x0800ceac
- 80098bc:	0800ceac 	.word	0x0800ceac
- 80098c0:	0800ceac 	.word	0x0800ceac
- 80098c4:	0800ceb0 	.word	0x0800ceb0
+ 80098b8:	0800ceb4 	.word	0x0800ceb4
+ 80098bc:	0800ceb4 	.word	0x0800ceb4
+ 80098c0:	0800ceb4 	.word	0x0800ceb4
+ 80098c4:	0800ceb8 	.word	0x0800ceb8
 
 080098c8 <__retarget_lock_init_recursive>:
  80098c8:	4770      	bx	lr
@@ -24002,15 +24063,15 @@ static void UART_EndRxTransfer(UART_HandleTypeDef *huart)
  8009ca4:	3fc68a28 	.word	0x3fc68a28
  8009ca8:	509f79fb 	.word	0x509f79fb
  8009cac:	3fd34413 	.word	0x3fd34413
- 8009cb0:	0800c769 	.word	0x0800c769
- 8009cb4:	0800c780 	.word	0x0800c780
+ 8009cb0:	0800c771 	.word	0x0800c771
+ 8009cb4:	0800c788 	.word	0x0800c788
  8009cb8:	7ff00000 	.word	0x7ff00000
- 8009cbc:	0800c739 	.word	0x0800c739
+ 8009cbc:	0800c741 	.word	0x0800c741
  8009cc0:	3ff80000 	.word	0x3ff80000
- 8009cc4:	0800c8d0 	.word	0x0800c8d0
- 8009cc8:	0800c7d8 	.word	0x0800c7d8
- 8009ccc:	0800c765 	.word	0x0800c765
- 8009cd0:	0800c738 	.word	0x0800c738
+ 8009cc4:	0800c8d8 	.word	0x0800c8d8
+ 8009cc8:	0800c7e0 	.word	0x0800c7e0
+ 8009ccc:	0800c76d 	.word	0x0800c76d
+ 8009cd0:	0800c740 	.word	0x0800c740
  8009cd4:	f8d9 301c 	ldr.w	r3, [r9, #28]
  8009cd8:	6018      	str	r0, [r3, #0]
  8009cda:	9b03      	ldr	r3, [sp, #12]
@@ -24239,8 +24300,8 @@ static void UART_EndRxTransfer(UART_HandleTypeDef *huart)
  8009f58:	e9cd 0104 	strd	r0, r1, [sp, #16]
  8009f5c:	e7c4      	b.n	8009ee8 <_dtoa_r+0x508>
  8009f5e:	bf00      	nop
- 8009f60:	0800c8d0 	.word	0x0800c8d0
- 8009f64:	0800c8a8 	.word	0x0800c8a8
+ 8009f60:	0800c8d8 	.word	0x0800c8d8
+ 8009f64:	0800c8b0 	.word	0x0800c8b0
  8009f68:	3ff00000 	.word	0x3ff00000
  8009f6c:	40240000 	.word	0x40240000
  8009f70:	401c0000 	.word	0x401c0000
@@ -24869,8 +24930,8 @@ static void UART_EndRxTransfer(UART_HandleTypeDef *huart)
  800a570:	f000 f968 	bl	800a844 <__multadd>
  800a574:	9002      	str	r0, [sp, #8]
  800a576:	e7eb      	b.n	800a550 <_dtoa_r+0xb70>
- 800a578:	0800c7d8 	.word	0x0800c7d8
- 800a57c:	0800c75c 	.word	0x0800c75c
+ 800a578:	0800c7e0 	.word	0x0800c7e0
+ 800a57c:	0800c764 	.word	0x0800c764
 
 0800a580 <_free_r>:
  800a580:	b538      	push	{r3, r4, r5, lr}
@@ -25154,8 +25215,8 @@ static void UART_EndRxTransfer(UART_HandleTypeDef *huart)
  800a7f0:	e9c0 3303 	strd	r3, r3, [r0, #12]
  800a7f4:	e7f7      	b.n	800a7e6 <_Balloc+0x66>
  800a7f6:	bf00      	nop
- 800a7f8:	0800c769 	.word	0x0800c769
- 800a7fc:	0800c7e9 	.word	0x0800c7e9
+ 800a7f8:	0800c771 	.word	0x0800c771
+ 800a7fc:	0800c7f1 	.word	0x0800c7f1
 
 0800a800 <_Bfree>:
  800a800:	b570      	push	{r4, r5, r6, lr}
@@ -25183,8 +25244,8 @@ static void UART_EndRxTransfer(UART_HandleTypeDef *huart)
  800a834:	6021      	str	r1, [r4, #0]
  800a836:	f843 4022 	str.w	r4, [r3, r2, lsl #2]
  800a83a:	bd70      	pop	{r4, r5, r6, pc}
- 800a83c:	0800c769 	.word	0x0800c769
- 800a840:	0800c7e9 	.word	0x0800c7e9
+ 800a83c:	0800c771 	.word	0x0800c771
+ 800a840:	0800c7f1 	.word	0x0800c7f1
 
 0800a844 <__multadd>:
  800a844:	e92d 41f0 	stmdb	sp!, {r4, r5, r6, r7, r8, lr}
@@ -25238,8 +25299,8 @@ static void UART_EndRxTransfer(UART_HandleTypeDef *huart)
  800a8c0:	6125      	str	r5, [r4, #16]
  800a8c2:	4620      	mov	r0, r4
  800a8c4:	e8bd 81f0 	ldmia.w	sp!, {r4, r5, r6, r7, r8, pc}
- 800a8c8:	0800c7d8 	.word	0x0800c7d8
- 800a8cc:	0800c7e9 	.word	0x0800c7e9
+ 800a8c8:	0800c7e0 	.word	0x0800c7e0
+ 800a8cc:	0800c7f1 	.word	0x0800c7f1
 
 0800a8d0 <__hi0bits>:
  800a8d0:	f5b0 3f80 	cmp.w	r0, #65536	@ 0x10000
@@ -25329,8 +25390,8 @@ static void UART_EndRxTransfer(UART_HandleTypeDef *huart)
  800a986:	6103      	str	r3, [r0, #16]
  800a988:	bd10      	pop	{r4, pc}
  800a98a:	bf00      	nop
- 800a98c:	0800c7d8 	.word	0x0800c7d8
- 800a990:	0800c7e9 	.word	0x0800c7e9
+ 800a98c:	0800c7e0 	.word	0x0800c7e0
+ 800a990:	0800c7f1 	.word	0x0800c7f1
 
 0800a994 <__multiply>:
  800a994:	e92d 4ff0 	stmdb	sp!, {r4, r5, r6, r7, r8, r9, sl, fp, lr}
@@ -25449,8 +25510,8 @@ static void UART_EndRxTransfer(UART_HandleTypeDef *huart)
  800aaca:	e79f      	b.n	800aa0c <__multiply+0x78>
  800aacc:	3e01      	subs	r6, #1
  800aace:	e7a1      	b.n	800aa14 <__multiply+0x80>
- 800aad0:	0800c7d8 	.word	0x0800c7d8
- 800aad4:	0800c7e9 	.word	0x0800c7e9
+ 800aad0:	0800c7e0 	.word	0x0800c7e0
+ 800aad4:	0800c7f1 	.word	0x0800c7f1
 
 0800aad8 <__pow5mult>:
  800aad8:	e92d 43f8 	stmdb	sp!, {r3, r4, r5, r6, r7, r8, r9, lr}
@@ -25518,9 +25579,9 @@ static void UART_EndRxTransfer(UART_HandleTypeDef *huart)
  800ab78:	4630      	mov	r0, r6
  800ab7a:	e8bd 83f8 	ldmia.w	sp!, {r3, r4, r5, r6, r7, r8, r9, pc}
  800ab7e:	bf00      	nop
- 800ab80:	0800c89c 	.word	0x0800c89c
- 800ab84:	0800c769 	.word	0x0800c769
- 800ab88:	0800c7e9 	.word	0x0800c7e9
+ 800ab80:	0800c8a4 	.word	0x0800c8a4
+ 800ab84:	0800c771 	.word	0x0800c771
+ 800ab88:	0800c7f1 	.word	0x0800c7f1
 
 0800ab8c <__lshift>:
  800ab8c:	e92d 47f0 	stmdb	sp!, {r4, r5, r6, r7, r8, r9, sl, lr}
@@ -25599,8 +25660,8 @@ static void UART_EndRxTransfer(UART_HandleTypeDef *huart)
  800ac56:	d8f9      	bhi.n	800ac4c <__lshift+0xc0>
  800ac58:	e7ea      	b.n	800ac30 <__lshift+0xa4>
  800ac5a:	bf00      	nop
- 800ac5c:	0800c7d8 	.word	0x0800c7d8
- 800ac60:	0800c7e9 	.word	0x0800c7e9
+ 800ac5c:	0800c7e0 	.word	0x0800c7e0
+ 800ac60:	0800c7f1 	.word	0x0800c7f1
 
 0800ac64 <__mcmp>:
  800ac64:	690a      	ldr	r2, [r1, #16]
@@ -25736,8 +25797,8 @@ static void UART_EndRxTransfer(UART_HandleTypeDef *huart)
  800adb6:	3f01      	subs	r7, #1
  800adb8:	e7e7      	b.n	800ad8a <__mdiff+0xee>
  800adba:	bf00      	nop
- 800adbc:	0800c7d8 	.word	0x0800c7d8
- 800adc0:	0800c7e9 	.word	0x0800c7e9
+ 800adbc:	0800c7e0 	.word	0x0800c7e0
+ 800adc0:	0800c7f1 	.word	0x0800c7f1
 
 0800adc4 <__d2b>:
  800adc4:	e92d 43f7 	stmdb	sp!, {r0, r1, r2, r4, r5, r6, r7, r8, r9, lr}
@@ -25803,8 +25864,8 @@ static void UART_EndRxTransfer(UART_HandleTypeDef *huart)
  800ae62:	f7ff fd35 	bl	800a8d0 <__hi0bits>
  800ae66:	ebc0 1042 	rsb	r0, r0, r2, lsl #5
  800ae6a:	e7e5      	b.n	800ae38 <__d2b+0x74>
- 800ae6c:	0800c7d8 	.word	0x0800c7d8
- 800ae70:	0800c7e9 	.word	0x0800c7e9
+ 800ae6c:	0800c7e0 	.word	0x0800c7e0
+ 800ae70:	0800c7f1 	.word	0x0800c7f1
 
 0800ae74 <__sfputc_r>:
  800ae74:	6893      	ldr	r3, [r2, #8]
@@ -26070,11 +26131,11 @@ static void UART_EndRxTransfer(UART_HandleTypeDef *huart)
  800b0dc:	4630      	mov	r0, r6
  800b0de:	f7fe f84f 	bl	8009180 <_printf_i>
  800b0e2:	e7e4      	b.n	800b0ae <_vfiprintf_r+0x1e6>
- 800b0e4:	0800c842 	.word	0x0800c842
- 800b0e8:	0800c84c 	.word	0x0800c84c
+ 800b0e4:	0800c84a 	.word	0x0800c84a
+ 800b0e8:	0800c854 	.word	0x0800c854
  800b0ec:	08008c51 	.word	0x08008c51
  800b0f0:	0800aea3 	.word	0x0800aea3
- 800b0f4:	0800c848 	.word	0x0800c848
+ 800b0f4:	0800c850 	.word	0x0800c850
 
 0800b0f8 <__sflush_r>:
  800b0f8:	f9b1 200c 	ldrsh.w	r2, [r1, #12]
@@ -26399,9 +26460,9 @@ static void UART_EndRxTransfer(UART_HandleTypeDef *huart)
  800b3bc:	e7f3      	b.n	800b3a6 <__assert_func+0x12>
  800b3be:	bf00      	nop
  800b3c0:	20000048 	.word	0x20000048
- 800b3c4:	0800c85d 	.word	0x0800c85d
- 800b3c8:	0800c86a 	.word	0x0800c86a
- 800b3cc:	0800c898 	.word	0x0800c898
+ 800b3c4:	0800c865 	.word	0x0800c865
+ 800b3c8:	0800c872 	.word	0x0800c872
+ 800b3cc:	0800c8a0 	.word	0x0800c8a0
 
 0800b3d0 <_calloc_r>:
  800b3d0:	b570      	push	{r4, r5, r6, lr}
@@ -26576,7 +26637,7 @@ static void UART_EndRxTransfer(UART_HandleTypeDef *huart)
  800b546:	4802      	ldr	r0, [pc, #8]	@ (800b550 <log10f+0x58>)
  800b548:	f000 b868 	b.w	800b61c <nanf>
  800b54c:	ff800000 	.word	0xff800000
- 800b550:	0800c898 	.word	0x0800c898
+ 800b550:	0800c8a0 	.word	0x0800c8a0
 
 0800b554 <sqrtf>:
  800b554:	b508      	push	{r3, lr}
@@ -26847,8 +26908,8 @@ static void UART_EndRxTransfer(UART_HandleTypeDef *huart)
  800b88c:	c0490fdb 	.word	0xc0490fdb
  800b890:	bfc90fdb 	.word	0xbfc90fdb
  800b894:	3fc90fdb 	.word	0x3fc90fdb
- 800b898:	0800caa8 	.word	0x0800caa8
- 800b89c:	0800ca9c 	.word	0x0800ca9c
+ 800b898:	0800cab0 	.word	0x0800cab0
+ 800b89c:	0800caa4 	.word	0x0800caa4
  800b8a0:	33bbbd2e 	.word	0x33bbbd2e
  800b8a4:	40490fdb 	.word	0x40490fdb
  800b8a8:	00000000 	.word	0x00000000
@@ -27088,11 +27149,11 @@ static void UART_EndRxTransfer(UART_HandleTypeDef *huart)
  800bba0:	2e85a308 	.word	0x2e85a308
  800bba4:	43490f80 	.word	0x43490f80
  800bba8:	3f22f984 	.word	0x3f22f984
- 800bbac:	0800cab4 	.word	0x0800cab4
+ 800bbac:	0800cabc 	.word	0x0800cabc
  800bbb0:	2e85a300 	.word	0x2e85a300
  800bbb4:	248d3132 	.word	0x248d3132
  800bbb8:	43800000 	.word	0x43800000
- 800bbbc:	0800cb34 	.word	0x0800cb34
+ 800bbbc:	0800cb3c 	.word	0x0800cb3c
 
 0800bbc0 <atanf>:
  800bbc0:	b538      	push	{r3, r4, r5, lr}
@@ -27217,8 +27278,8 @@ static void UART_EndRxTransfer(UART_HandleTypeDef *huart)
  800bd54:	bde38e38 	.word	0xbde38e38
  800bd58:	be4ccccd 	.word	0xbe4ccccd
  800bd5c:	401bffff 	.word	0x401bffff
- 800bd60:	0800ce5c 	.word	0x0800ce5c
- 800bd64:	0800ce4c 	.word	0x0800ce4c
+ 800bd60:	0800ce64 	.word	0x0800ce64
+ 800bd64:	0800ce54 	.word	0x0800ce54
 
 0800bd68 <fabsf>:
  800bd68:	ee10 3a10 	vmov	r3, s0
@@ -27488,8 +27549,8 @@ static void UART_EndRxTransfer(UART_HandleTypeDef *huart)
  800c058:	3401      	adds	r4, #1
  800c05a:	eee6 7a87 	vfma.f32	s15, s13, s14
  800c05e:	e7f0      	b.n	800c042 <__kernel_rem_pio2f+0x2ca>
- 800c060:	0800ce98 	.word	0x0800ce98
- 800c064:	0800ce6c 	.word	0x0800ce6c
+ 800c060:	0800cea0 	.word	0x0800cea0
+ 800c064:	0800ce74 	.word	0x0800ce74
  800c068:	43800000 	.word	0x43800000
  800c06c:	3b800000 	.word	0x3b800000
  800c070:	00000000 	.word	0x00000000
