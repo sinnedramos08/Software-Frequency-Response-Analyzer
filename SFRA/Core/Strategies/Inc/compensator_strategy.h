@@ -43,7 +43,7 @@
 #endif
 
 // For defining the frequencies in sweep
-#define FREQ_POINTS_PER_DECADE				(10U) // Can only Vary from 10 to 50 Points Per Decade
+#define FREQ_POINTS_PER_DECADE				(50U) // Can only Vary from 10 to 50 Points Per Decade
 
 #if TOGGLE_SWEEP_ILOOP_FS_100KHZ || TOGGLE_SWEEP_PI_ILOOP_FS_100KHZ
 #define FREQ_START_HZ						(10U)

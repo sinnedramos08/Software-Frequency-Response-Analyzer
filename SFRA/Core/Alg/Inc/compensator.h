@@ -33,7 +33,7 @@
 #define A1_V (+1.9800607277045987)
 #define A2_V (-0.9800607277045986)
 
-#define KP	(2.0f)
+#define KP	(3.0f)
 #define KI	(0.1f)
 
 #define STRING_OPERATION	"120VAC 380VDC 500W"

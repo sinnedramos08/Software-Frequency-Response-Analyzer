@@ -21,10 +21,11 @@
 #define FLOAT_V_TO_ADC(voltage) 			((float)(voltage) * 4095.0f / 3.3f)
 #define SINE_INJECTED_AMPLITUDE_VOLTS		(0.5f)	// Amplitude of Injected Signal in Volts (0.5V to 1V)
 #define SINE_INJECTED_AMPLITUDE_ADC			FLOAT_V_TO_ADC(SINE_INJECTED_AMPLITUDE_VOLTS)
+// For defining the frequencies in sweep
+#define FREQ_POINTS_PER_DECADE				(40U) // Can only Vary from 10 to 50 Points Per Decade
 #endif
 
-// For defining the frequencies in sweep
-#define FREQ_POINTS_PER_DECADE				(10U) // Can only Vary from 10 to 50 Points Per Decade
+
 
 #if TOGGLE_SWEEP_IPLANT_FS_100KHZ
 #define FREQ_START_HZ						(10U)
