@@ -1,1 +1,2 @@
-../Core/Alg/Src/compensator.c:12:6:compensator_2P2Z_Init	48	static
+../Core/Alg/Src/compensator.c:13:6:compensator_2P2Z_Init	48	static
+../Core/Alg/Src/compensator.c:30:6:pi_Discrete_Controller_Init	24	static

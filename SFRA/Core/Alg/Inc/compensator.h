@@ -33,6 +33,9 @@
 #define A1_V (+1.9800607277045987)
 #define A2_V (-0.9800607277045986)
 
+#define KP	(2.0f)
+#define KI	(0.1f)
+
 #define STRING_OPERATION	"120VAC 380VDC 500W"
 #define STRING_ILOOP_FX		"ILOOP FX: 6KHZ"
 #define STRING_ILOOP_PM		"ILOOP PM: 47DEG"
@@ -45,7 +48,6 @@
 
 
 //Custom structures
-
 typedef struct
 {
 
@@ -65,12 +67,38 @@ typedef struct
 	uint16_t	u16_adc_buffer[2];
 }compensator_2p2z_t;
 
+
+typedef struct
+{
+	// Inputs
+	float 		f_ref;
+	float		f_fdbk;
+	float		f_error;
+	// PI Signals
+	float		f_kp;
+	float		f_ki;
+	float		f_integral;
+	// Limits
+	float		f_min;
+	float		f_max;
+	// Anti Wind Up
+	float		f_integral_limit;
+	// Output
+	float		f_out;
+}discrete_pi_controller_t;
+
+
+extern discrete_pi_controller_t	discretepi_iloop;
 extern compensator_2p2z_t 		comp2p2z_iloop;
 extern compensator_2p2z_t		comp2p2z_vloop;
 
 //Function prototypes
 void compensator_2P2Z_Init(compensator_2p2z_t * p_compensator, float f_ref, float f_a1, float f_a2, float f_b0, float f_b1, float f_b2, float f_k);
 inline static void compensator_2P2Z_Update(compensator_2p2z_t * p_compensator);
+
+void pi_Discrete_Controller_Init(discrete_pi_controller_t * p_pi_controller, float f_kp, float f_ki);
+static inline void pi_Discrete_Controller_Update(discrete_pi_controller_t * p_pi_controller);
+
 
 //__attribute__( ( section ( ".ccmram" ) ) )
 inline static void compensator_2P2Z_Update(compensator_2p2z_t * p_compensator)
@@ -96,6 +124,20 @@ inline static void compensator_2P2Z_Update(compensator_2p2z_t * p_compensator)
 	p_compensator->f_y[1] = p_compensator->f_y[0];
 
 	p_compensator->f_out = acc;
+
+}
+
+
+static inline void pi_Discrete_Controller_Update(discrete_pi_controller_t * p_pi_controller)
+{
+	// Get the error
+	p_pi_controller->f_error= p_pi_controller->f_ref-p_pi_controller->f_fdbk;
+
+	// Compute Integral Output
+	p_pi_controller->f_integral += p_pi_controller->f_ki * p_pi_controller->f_error;
+
+    // Sum Proportional and Integral Terms
+    p_pi_controller->f_out = (p_pi_controller->f_kp * p_pi_controller->f_error) + p_pi_controller->f_integral;
 
 }
 

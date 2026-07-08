@@ -18,11 +18,16 @@ static compensator_strategy_loop_t g_comp_strategy_loop;	// For which type of lo
 
 const sfra_strategy_t compensator_strategy =
 {
-    .ISR = CompensatorStrategy_ISR,
+
 #if TOGGLE_SWEEP_ILOOP_FS_100KHZ
-	.timer_idx = HRTIM_TIMERINDEX_TIMER_A
+		.ISR = CompensatorStrategy_ISR,
+		.timer_idx = HRTIM_TIMERINDEX_TIMER_A
 #elif TOGGLE_SWEEP_VLOOP_FS_6KHZ
-	.timer_idx = HRTIM_TIMERINDEX_TIMER_D
+		.ISR = CompensatorStrategy_ISR,
+		.timer_idx = HRTIM_TIMERINDEX_TIMER_D
+#elif TOGGLE_SWEEP_PI_ILOOP_FS_100KHZ
+		.ISR = DiscretePIStrategy_ISR,
+		.timer_idx = HRTIM_TIMERINDEX_TIMER_A
 #endif
 };
 
@@ -30,17 +35,34 @@ const sfra_strategy_t compensator_strategy =
 void CompensatorStrategy_Init(void)
 {
 #if TOGGLE_SWEEP_ILOOP_FS_100KHZ
-
 	g_comp_strategy_loop.p_comp = &comp2p2z_iloop;
-
 #elif TOGGLE_SWEEP_VLOOP_FS_6KHZ
-
 	g_comp_strategy_loop.p_comp = &comp2p2z_vloop;
-
+#elif TOGGLE_SWEEP_PI_ILOOP_FS_100KHZ
+	g_comp_strategy_loop.p_comp =&discretepi_iloop;
 #endif
 }
 
+#if TOGGLE_SWEEP_PI_ILOOP_FS_100KHZ
+void DiscretePIStrategy_ISR(void)
+{
+	SFRA_Run();
+	DDS_Update();
 
+	// Run PI Controller
+	g_comp_strategy_loop.p_comp->f_ref = g_dds.f_sine_out;
+	g_comp_strategy_loop.p_comp->f_fdbk = 0.0f;
+	pi_Discrete_Controller_Update(g_comp_strategy_loop.p_comp);
+
+	// Accumulator During FSM Measuring
+	if(g_sfra.state == SFRA_STATE_MEASURING)
+	{
+		IQ_Accumulate(g_comp_strategy_loop.p_comp->f_ref, g_comp_strategy_loop.p_comp->f_out, g_dds.f_sine_ref, g_dds.f_cosine_ref);
+
+	}
+}
+#endif
+#if TOGGLE_SWEEP_ILOOP_FS_100KHZ || TOGGLE_SWEEP_VLOOP_FS_6KHZ
 void CompensatorStrategy_ISR(void)
 {
 	SFRA_Run();
@@ -58,3 +80,4 @@ void CompensatorStrategy_ISR(void)
 
 	}
 }
+#endif

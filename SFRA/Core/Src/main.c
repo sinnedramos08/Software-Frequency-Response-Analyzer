@@ -100,7 +100,7 @@ int main(void)
 {
 
   /* USER CODE BEGIN 1 */
-#if TOGGLE_SWEEP_ILOOP_FS_100KHZ || TOGGLE_SWEEP_VLOOP_FS_6KHZ
+#if TOGGLE_SWEEP_ILOOP_FS_100KHZ || TOGGLE_SWEEP_VLOOP_FS_6KHZ || TOGGLE_SWEEP_PI_ILOOP_FS_100KHZ
 	g_active_strategy = &compensator_strategy;
 #elif TOGGLE_SWEEP_IPLANT_FS_100KHZ
 	g_active_strategy = &plant_strategy;
@@ -133,6 +133,7 @@ int main(void)
   /* USER CODE BEGIN 2 */
   compensator_2P2Z_Init(&comp2p2z_iloop, 0.0f, A1_I, A2_I, B0_I, B1_I, B2_I, 1);
   compensator_2P2Z_Init(&comp2p2z_vloop, 0.0f, A1_V, A2_V, B0_V, B1_V, B2_V, 1);
+  pi_Discrete_Controller_Init(&discretepi_iloop, KP, KI);
 
   SFRA_Init();
   DDS_Init();
@@ -147,7 +148,7 @@ int main(void)
   //HAL_HRTIM_WaveformOutputStart(&hhrtim1, HRTIM_OUTPUT_TA1);
 #endif
 
-#if TOGGLE_SWEEP_ILOOP_FS_100KHZ
+#if TOGGLE_SWEEP_ILOOP_FS_100KHZ || TOGGLE_SWEEP_PI_ILOOP_FS_100KHZ
   HAL_HRTIM_WaveformCountStart_IT(&hhrtim1, HRTIM_TIMERID_TIMER_A);
   HAL_HRTIM_WaveformOutputStart(&hhrtim1, HRTIM_OUTPUT_TA1|HRTIM_OUTPUT_TA2);	// For Debugging Purposes
   CompensatorStrategy_Init();
@@ -192,8 +193,10 @@ int main(void)
 #elif TOGGLE_SWEEP_VLOOP_FS_6KHZ
 		printf("VLOOP Parameters: %s, %s, %s\r\n", STRING_VLOOP_FX, STRING_VLOOP_PM, STRING_VLOOP_GM);
 		printf("VLOOP Coefficients: B0:%f B1:%f B2:%f A1:%f A2:%f\r\n\r\n", B0_V, B1_V, B2_V, A1_V, A2_V);
+#elif TOGGLE_SWEEP_PI_ILOOP_FS_100KHZ
+		printf("ILOOP PI Parameters: KP:%f KI:%f\r\n\r\n", KP, KI);
+		printf("ILOOP PI Coefficients: KP:%f KI:%f\r\n\r\n", KP, KI);
 #endif
-
 		printf("frequency,magnitude_db,phase_deg\r\n");
 	}
 
@@ -202,7 +205,7 @@ int main(void)
 
 	if(g_sfra.b_result_ready_flag)
 	{
-#if TOGGLE_SWEEP_ILOOP_FS_100KHZ
+#if TOGGLE_SWEEP_ILOOP_FS_100KHZ ||TOGGLE_SWEEP_PI_ILOOP_FS_100KHZ
 		g_sfra.b_result_ready_flag = false;
 		printf("%f,%f,%f\r\n", g_sfra.freq_table[g_sfra.freq_index-1], g_sfra.gain_db[g_sfra.freq_index-1], g_sfra.phase_deg[g_sfra.freq_index-1]);
 #elif TOGGLE_SWEEP_VLOOP_FS_6KHZ
