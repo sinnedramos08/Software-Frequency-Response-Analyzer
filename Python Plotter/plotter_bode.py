@@ -11,7 +11,7 @@ import serial
 # Configuration
 SERIAL_PORT = "COM10"          # Change this to your serial port
 SERIAL_BAUD = 115200           # Change this if your UART uses another baud rate
-COMPARE_CSV_PATH = "PICTRL_3KP_0K1KI.csv"
+COMPARE_CSV_PATH = "DISCRETEPI_VP_74P43_VI_6I87.csv"
 SAVE_FILENAME = "sweep_data.csv"  # Default file name for UART sweep save
 
 
