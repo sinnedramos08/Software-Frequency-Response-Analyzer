@@ -13,6 +13,8 @@
 #include "compensator_strategy.h"
 #include "plant_strategy.h"
 
+#define NO_FADE	(1U)
+
 // Structs and Enum
 typedef enum
 {

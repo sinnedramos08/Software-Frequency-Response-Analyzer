@@ -1,6 +1,6 @@
 ../Core/Engine/Src/dds.c:21:6:DDS_Init	1
-../Core/Engine/Src/dds.c:27:6:DDS_Sine_LUT_Init	2
-../Core/Engine/Src/dds.c:36:6:DDS_UpdateFrequency	1
-../Core/Engine/Src/dds.c:48:6:DDS_Update	1
-../Core/Engine/Src/dds.c:64:6:DDS_AmplitudeRamp	5
-../Core/Engine/Src/dds.c:92:6:DDS_IsAmplitudeReached	1
+../Core/Engine/Src/dds.c:31:6:DDS_Sine_LUT_Init	2
+../Core/Engine/Src/dds.c:40:6:DDS_UpdateFrequency	1
+../Core/Engine/Src/dds.c:52:6:DDS_Update	1
+../Core/Engine/Src/dds.c:68:6:DDS_AmplitudeRamp	5
+../Core/Engine/Src/dds.c:96:6:DDS_IsAmplitudeReached	1

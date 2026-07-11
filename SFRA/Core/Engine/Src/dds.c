@@ -20,7 +20,11 @@ dds_t g_dds;
 
 void DDS_Init(void)
 {
+#if NO_FADE
+	g_dds.f_sine_amplitude = SINE_INJECTED_AMPLITUDE_ADC;	// For 1V Amplitude Signal in Oscilloscope
+#else
 	g_dds.f_sine_amplitude_target = SINE_INJECTED_AMPLITUDE_ADC;	// For 1V Amplitude Signal in Oscilloscope
+#endif
 	DDS_Sine_LUT_Init();
 
 }
