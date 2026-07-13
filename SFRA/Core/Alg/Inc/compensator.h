@@ -33,8 +33,8 @@
 #define A1_V (+1.9800607277045987)
 #define A2_V (-0.9800607277045986)
 
-#define KP	(74.430000f)
-#define KI	(6.870684f)
+#define KP	(78.53f)
+#define KI	(1.0447202192208f)
 
 #define STRING_OPERATION	"120VAC 380VDC 500W"
 #define STRING_ILOOP_FX		"ILOOP FX: 6KHZ"
