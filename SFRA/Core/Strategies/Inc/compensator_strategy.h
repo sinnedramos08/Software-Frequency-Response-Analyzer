@@ -40,12 +40,21 @@
 #define FLOAT_V_TO_ADC(voltage) 			((float)(voltage) * 4095.0f / 3.3f)
 #define SINE_INJECTED_AMPLITUDE_VOLTS		(1.0f)	// Amplitude of Injected Signal in Volts (0.5V to 1V)
 #define SINE_INJECTED_AMPLITUDE_ADC			FLOAT_V_TO_ADC(SINE_INJECTED_AMPLITUDE_VOLTS)
+
+#elif TOGGLE_SWEEP_DIGFILTER_FS_100KHZ
+#define FLOAT_SFRA_FS_HZ                 	(100000.0f)
+#define SFRA_SETTLING_CYCLES       			(100U)	// Number of cycles to be waited before it settles
+#define SFRA_MEASUREMENT_CYCLES    			(100U)	// Number of Cycles to be calculated
+#define STRING_MESSAGE_SWEEP_NAME			"Digital Filter Order1"
+#define FLOAT_V_TO_ADC(voltage) 			((float)(voltage) * 4095.0f / 3.3f)
+#define SINE_INJECTED_AMPLITUDE_VOLTS		(1.0f)	// Amplitude of Injected Signal in Volts (0.5V to 1V)
+#define SINE_INJECTED_AMPLITUDE_ADC			FLOAT_V_TO_ADC(SINE_INJECTED_AMPLITUDE_VOLTS)
 #endif
 
 // For defining the frequencies in sweep
 #define FREQ_POINTS_PER_DECADE				(50U) // Can only Vary from 10 to 50 Points Per Decade
 
-#if TOGGLE_SWEEP_ILOOP_FS_100KHZ || TOGGLE_SWEEP_PI_ILOOP_FS_100KHZ
+#if TOGGLE_SWEEP_ILOOP_FS_100KHZ || TOGGLE_SWEEP_PI_ILOOP_FS_100KHZ ||TOGGLE_SWEEP_DIGFILTER_FS_100KHZ
 #define FREQ_START_HZ						(100U)
 #define	FREQ_STOP_HZ						(40000U)	// Considered Nyquist Frequency: Fsampling>2Fsampled
 #elif TOGGLE_SWEEP_VLOOP_FS_6KHZ
@@ -57,10 +66,13 @@
 
 typedef struct
 {
-#if TOGGLE_SWEEP_ILOOP_FS_100KHZ|TOGGLE_SWEEP_VLOOP_FS_6KHZ
+#if TOGGLE_SWEEP_ILOOP_FS_100KHZ||TOGGLE_SWEEP_VLOOP_FS_6KHZ
     compensator_2p2z_t *p_comp;
 #elif TOGGLE_SWEEP_PI_ILOOP_FS_100KHZ
     discrete_pi_controller_t *p_comp;
+#elif TOGGLE_SWEEP_DIGFILTER_FS_100KHZ
+    filter_LPFData_t *p_comp;
+
 #endif
 } compensator_strategy_loop_t;
 
@@ -69,6 +81,7 @@ extern const sfra_strategy_t compensator_strategy;
 
 // Function Prototypes
 void DiscretePIStrategy_ISR(void);
+void DigFilterStrategy_ISR(void);
 void CompensatorStrategy_Init(void);
 void CompensatorStrategy_ISR(void);
 #endif /* STRATEGIES_INC_COMPENSATOR_STRATEGY_H_ */

@@ -9,9 +9,9 @@ import matplotlib.pyplot as plt
 import serial
 
 # Configuration
-SERIAL_PORT = "COM10"          # Change this to your serial port
+SERIAL_PORT = "COM11"          # Change this to your serial port
 SERIAL_BAUD = 115200           # Change this if your UART uses another baud rate
-COMPARE_CSV_PATH = "DISCRETEPI_NOEROSION_VP_78P5_VI_1I04_converted.csv"
+COMPARE_CSV_PATH = "lpf_digital_bode_FX_2K.csv"
 SAVE_FILENAME = "sweep_data.csv"  # Default file name for UART sweep save
 
 

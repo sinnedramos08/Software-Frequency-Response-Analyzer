@@ -1,3 +1,3 @@
-C:/Users/denni/Desktop/compensator_freqdomain/Software-Frequency-Response-Analyzer/SFRA/Core/Alg/Inc/compensator.h:131:20:pi_Discrete_Controller_Update	1
-../Core/Strategies/Src/compensator_strategy.c:35:6:CompensatorStrategy_Init	1
-../Core/Strategies/Src/compensator_strategy.c:47:6:DiscretePIStrategy_ISR	2
+C:/Users/DRamos/OneDrive - Power Integrations/Documents/2. Firmware/Software-Frequency-Response-Analyzer/SFRA/Core/Alg/Inc/compensator.h:121:20:filter_Order1_LPF_Update	1
+../Core/Strategies/Src/compensator_strategy.c:38:6:CompensatorStrategy_Init	1
+../Core/Strategies/Src/compensator_strategy.c:52:6:DigFilterStrategy_ISR	2

@@ -28,6 +28,9 @@ const sfra_strategy_t compensator_strategy =
 #elif TOGGLE_SWEEP_PI_ILOOP_FS_100KHZ
 		.ISR = DiscretePIStrategy_ISR,
 		.timer_idx = HRTIM_TIMERINDEX_TIMER_A
+#elif TOGGLE_SWEEP_DIGFILTER_FS_100KHZ
+		.ISR = DigFilterStrategy_ISR,
+		.timer_idx = HRTIM_TIMERINDEX_TIMER_A
 #endif
 };
 
@@ -39,9 +42,30 @@ void CompensatorStrategy_Init(void)
 #elif TOGGLE_SWEEP_VLOOP_FS_6KHZ
 	g_comp_strategy_loop.p_comp = &comp2p2z_vloop;
 #elif TOGGLE_SWEEP_PI_ILOOP_FS_100KHZ
-	g_comp_strategy_loop.p_comp =&discretepi_iloop;
+	g_comp_strategy_loop.p_comp = &discretepi_iloop;
+#elif TOGGLE_SWEEP_DIGFILTER_FS_100KHZ
+	g_comp_strategy_loop.p_comp = &Order1_LPF_filter;
 #endif
 }
+
+#if TOGGLE_SWEEP_DIGFILTER_FS_100KHZ
+void DigFilterStrategy_ISR(void)
+{
+	SFRA_Run();
+	DDS_Update();
+	// Run Digital Filter
+	g_comp_strategy_loop.p_comp->f_ref = g_dds.f_sine_out;
+	filter_Order1_LPF_Update(g_comp_strategy_loop.p_comp);
+
+	// Accumulator During FSM Measuring
+	if(g_sfra.state == SFRA_STATE_MEASURING)
+	{
+		IQ_Accumulate(g_comp_strategy_loop.p_comp->f_ref, g_comp_strategy_loop.p_comp->f_out, g_dds.f_sine_ref, g_dds.f_cosine_ref);
+
+	}
+
+}
+#endif
 
 #if TOGGLE_SWEEP_PI_ILOOP_FS_100KHZ
 void DiscretePIStrategy_ISR(void)
@@ -62,6 +86,7 @@ void DiscretePIStrategy_ISR(void)
 	}
 }
 #endif
+
 #if TOGGLE_SWEEP_ILOOP_FS_100KHZ || TOGGLE_SWEEP_VLOOP_FS_6KHZ
 void CompensatorStrategy_ISR(void)
 {
